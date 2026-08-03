@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --color-duo-green: #58cc02;
+  --color-duo-green-hover: #46a302;
+  --color-duo-green-light: #e5f5d1;
+  --color-duo-blue: #1cb0f6;
+  --color-duo-gray: #afafaf;
+  --color-duo-border: #e5e5e5;
+  --color-duo-red: #ff4b4b;
+}
+
+@layer base {
+  html {
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-white text-zinc-800 antialiased;
+  }
+}
