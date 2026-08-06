@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { z } from "zod";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useSignUp, useAuth } from "@clerk/react";
@@ -6,9 +6,15 @@ import { notify } from "../../../lib/notify";
 import { request } from "../../../lib/api";
 import { getPaddle } from "../../../lib/paddle";
 import { registerSchema } from "../auth.schema";
+import {
+  inspectClerkError,
+  parseClerkApiError,
+} from "../lib/clerk-errors";
 import AuthLayout from "../components/AuthLayout";
 import OAuthButtons from "../components/OAuthButtons";
 import Divider from "../components/Divider";
+import PasswordInput from "../components/PasswordInput";
+import AuthErrorBanner from "../components/AuthErrorBanner";
 
 type FieldErrors = Partial<
   Record<keyof z.infer<typeof registerSchema>, string>
@@ -17,16 +23,27 @@ type FieldErrors = Partial<
 export default function RegisterPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { signUp, errors, fetchStatus } = useSignUp();
+  const { signUp, fetchStatus } = useSignUp();
   const { getToken } = useAuth();
   const planParam = searchParams.get("plan");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [clerkError, setClerkError] = useState<{
+    code: string;
+    message: string;
+  } | null>(null);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  const isLoading = fetchStatus === "fetching";
+  const isLoading = fetchStatus === "fetching" || isGoogleLoading;
+
+  const hasResetRef = useRef(false);
+  useEffect(() => {
+    if (hasResetRef.current) return;
+    hasResetRef.current = true;
+    signUp.reset();
+  }, [signUp]);
 
   function handleChange(field: keyof FieldErrors, value: string) {
     if (field === "name") setName(value);
@@ -35,11 +52,12 @@ export default function RegisterPage() {
     if (fieldErrors[field]) {
       setFieldErrors((prev) => ({ ...prev, [field]: undefined }));
     }
+    if (clerkError) setClerkError(null);
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitError(null);
+    setClerkError(null);
     setFieldErrors({});
 
     const result = registerSchema.safeParse({ name, email, password });
@@ -66,18 +84,23 @@ export default function RegisterPage() {
       });
 
       if (createResult.error) {
-        setSubmitError(
-          createResult.error.message ||
-            createResult.error.longMessage ||
-            "Error al registrarse",
-        );
+        const info = parseClerkApiError(createResult.error);
+        if (info) {
+          setClerkError({ code: info.code, message: info.message });
+        } else {
+          setClerkError({
+            code: "unknown",
+            message: "Error al registrarse",
+          });
+        }
         return;
       }
 
       if ((signUp as unknown as { status: string }).status !== "complete") {
-        setSubmitError(
-          `Registro incompleto (${(signUp as unknown as { status: string }).status}). Revisa la configuración de Clerk Dashboard.`,
-        );
+        setClerkError({
+          code: "incomplete_signup",
+          message: `Registro incompleto (${(signUp as unknown as { status: string }).status}). Revisa la configuración de Clerk Dashboard.`,
+        });
         return;
       }
 
@@ -109,23 +132,52 @@ export default function RegisterPage() {
 
       navigate("/app");
     } catch (err: unknown) {
+      const info = inspectClerkError(err);
+      if (info) {
+        setClerkError({ code: info.code, message: info.message });
+        return;
+      }
       if (err instanceof Error) {
-        setSubmitError(err.message || "Error inesperado");
+        setClerkError({
+          code: "unknown",
+          message: err.message || "Error inesperado",
+        });
       } else {
-        setSubmitError("Error inesperado");
+        setClerkError({ code: "unknown", message: "Error inesperado" });
       }
     }
   }
 
-  const clerkError =
-    errors?.global?.[0]?.message || errors?.global?.[0]?.longMessage;
+  const bannerMessages = clerkError ? [clerkError.message] : [];
 
   async function handleGoogleSignIn() {
-    await signUp.sso({
-      strategy: "oauth_google",
-      redirectCallbackUrl: `${window.location.origin}/sso-callback`,
-      redirectUrl: `${window.location.origin}/app`,
-    });
+    setClerkError(null);
+    setIsGoogleLoading(true);
+    try {
+      await signUp.sso({
+        strategy: "oauth_google",
+        redirectCallbackUrl: `${window.location.origin}/sso-callback`,
+        redirectUrl: `${window.location.origin}/app`,
+      });
+    } catch (err: unknown) {
+      setIsGoogleLoading(false);
+      const info = inspectClerkError(err);
+      if (info) {
+        setClerkError({ code: info.code, message: info.message });
+        return;
+      }
+      if (err instanceof Error) {
+        setClerkError({
+          code: "unknown",
+          message: err.message || "Error al iniciar con Google",
+        });
+      } else {
+        setClerkError({
+          code: "unknown",
+          message: "Error al iniciar con Google",
+        });
+      }
+    }
   }
 
   return (
@@ -133,13 +185,15 @@ export default function RegisterPage() {
       title="Crea tu cuenta"
       subtitle="Empieza a controlar tus finanzas"
     >
-      <OAuthButtons onGoogle={handleGoogleSignIn} />
+      <OAuthButtons onGoogle={handleGoogleSignIn} isGoogleLoading={isGoogleLoading} />
 
       <div className="my-6">
         <Divider />
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
+        <AuthErrorBanner messages={bannerMessages} />
+
         <div>
           <input
             type="text"
@@ -174,28 +228,14 @@ export default function RegisterPage() {
           )}
         </div>
 
-        <div>
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => handleChange("password", e.target.value)}
-            className={`h-12 w-full rounded-xl border-2 px-4 text-sm outline-none transition ${
-              fieldErrors.password
-                ? "border-red-400"
-                : "border-duo-border focus:border-duo-green"
-            }`}
-          />
-          {fieldErrors.password && (
-            <p className="mt-1 text-xs text-red-500">{fieldErrors.password}</p>
-          )}
-        </div>
-
-        {(submitError || clerkError) && (
-          <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
-            {submitError || clerkError}
-          </div>
-        )}
+        <PasswordInput
+          value={password}
+          onChange={(v) => handleChange("password", v)}
+          placeholder="Contraseña"
+          error={fieldErrors.password}
+          autoComplete="new-password"
+          showStrength
+        />
 
         <button
           type="submit"

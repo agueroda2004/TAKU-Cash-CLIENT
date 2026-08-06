@@ -1,10 +1,12 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useAuth, AuthenticateWithRedirectCallback } from "@clerk/react";
+import { useAuth } from "@clerk/react";
 import { useQuery } from "@tanstack/react-query";
 import DashboardLayout from "./shared/ui/DashboardLayout";
+import FullPageLoader from "./shared/ui/FullPageLoader";
 import ForgotPasswordPage from "./features/auth/pages/ForgotPasswordPage";
 import LoginPage from "./features/auth/pages/LoginPage";
 import RegisterPage from "./features/auth/pages/RegisterPage";
+import SsoCallbackPage from "./features/auth/pages/SsoCallbackPage";
 import DashboardPage from "./features/dashboard/pages/DashboardPage";
 import AccountPage from "./features/account/pages/AccountPage";
 import CategoryPage from "./features/category/pages/CategoryPage";
@@ -63,9 +65,9 @@ function SubscriptionRoute({ children }: { children: React.ReactNode }) {
     retry: false,
   });
 
-  if (!authLoaded || subLoading) return null;
+  if (!authLoaded || subLoading) return <FullPageLoader />;
   if (!isSignedIn) return <Navigate to="/login" replace />;
-  if (sub && (sub.status === "inactive" || sub.status === "cancelled")) {
+  if (!sub || sub.status === "inactive" || sub.status === "cancelled") {
     return <Navigate to="/app/payment" replace />;
   }
   return children;
@@ -102,7 +104,7 @@ export default function App() {
       />
       <Route
         path="/sso-callback"
-        element={<AuthenticateWithRedirectCallback />}
+        element={<SsoCallbackPage />}
       />
 
       <Route

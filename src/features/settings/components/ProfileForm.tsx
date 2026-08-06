@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useUser } from "@clerk/react";
 import { notify } from "../../../lib/notify";
 import { updateProfileSchema } from "../settings.schema";
 import type { User } from "../../auth/types";
@@ -14,25 +13,16 @@ type Props = {
 };
 
 export default function ProfileForm({ user, isSaving, onSave }: Props) {
-  const { user: clerkUser } = useUser();
-  const isEmailLocked =
-    clerkUser?.externalAccounts.some(
-      (account) => account.emailAddress === user.email,
-    ) ?? false;
-
   const [name, setName] = useState(user.name ?? "");
-  const [email, setEmail] = useState(user.email);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const dirty =
-    name.trim() !== (user.name ?? "") || email.trim() !== user.email;
+  const dirty = name.trim() !== (user.name ?? "");
 
-  function handleChange(field: keyof FieldErrors, value: string) {
-    if (field === "name") setName(value);
-    else setEmail(value);
-    if (fieldErrors[field]) {
-      setFieldErrors((prev) => ({ ...prev, [field]: undefined }));
+  function handleChange(value: string) {
+    setName(value);
+    if (fieldErrors.name) {
+      setFieldErrors((prev) => ({ ...prev, name: undefined }));
     }
     if (submitError) setSubmitError(null);
   }
@@ -41,7 +31,10 @@ export default function ProfileForm({ user, isSaving, onSave }: Props) {
     setSubmitError(null);
     setFieldErrors({});
 
-    const result = updateProfileSchema.safeParse({ name, email });
+    const result = updateProfileSchema.safeParse({
+      name,
+      email: user.email,
+    });
     if (!result.success) {
       const errors: FieldErrors = {};
       for (const issue of result.error.issues) {
@@ -80,7 +73,7 @@ export default function ProfileForm({ user, isSaving, onSave }: Props) {
         <input
           type="text"
           value={name}
-          onChange={(e) => handleChange("name", e.target.value)}
+          onChange={(e) => handleChange(e.target.value)}
           className={`h-11 w-full rounded-xl border-2 px-4 text-sm outline-none transition ${
             fieldErrors.name
               ? "border-red-400"
@@ -98,24 +91,14 @@ export default function ProfileForm({ user, isSaving, onSave }: Props) {
         </label>
         <input
           type="email"
-          value={email}
-          onChange={(e) => handleChange("email", e.target.value)}
-          disabled={isEmailLocked}
-          className={`h-11 w-full rounded-xl border-2 px-4 text-sm outline-none transition ${
-            isEmailLocked
-              ? "cursor-not-allowed border-zinc-100 bg-zinc-50 text-zinc-400"
-              : fieldErrors.email
-                ? "border-red-400"
-                : "border-zinc-200 focus:border-duo-green"
-          }`}
+          value={user.email}
+          disabled
+          readOnly
+          className="h-11 w-full cursor-not-allowed rounded-xl border-2 border-zinc-100 bg-zinc-50 px-4 text-sm text-zinc-400 outline-none"
         />
-        {fieldErrors.email && (
-          <p className="mt-1 text-xs text-red-500">{fieldErrors.email}</p>
-        )}
         <p className="mt-1.5 text-xs text-zinc-400">
-          {isEmailLocked
-            ? "Este correo está vinculado a tu cuenta de Google y no se puede cambiar."
-            : "Te enviaremos un correo para verificar el nuevo email."}
+          El correo no se puede cambiar desde aquí. Si deseas modificar tu
+          correo, por favor comunícate con soporte.
         </p>
       </div>
 

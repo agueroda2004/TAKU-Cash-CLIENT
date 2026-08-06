@@ -1,26 +1,42 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { z } from "zod";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth, useSignIn, useSignUp } from "@clerk/react";
+import { useAuth, useSignIn } from "@clerk/react";
 import { notify } from "../../../lib/notify";
 import { loginSchema } from "../auth.schema";
+import {
+  inspectClerkError,
+  parseClerkApiError,
+} from "../lib/clerk-errors";
 import AuthLayout from "../components/AuthLayout";
 import OAuthButtons from "../components/OAuthButtons";
 import Divider from "../components/Divider";
+import PasswordInput from "../components/PasswordInput";
+import AuthErrorBanner from "../components/AuthErrorBanner";
 
 type FieldErrors = Partial<Record<keyof z.infer<typeof loginSchema>, string>>;
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { isSignedIn, isLoaded } = useAuth();
-  const { signIn, errors, fetchStatus } = useSignIn();
-  const { signUp } = useSignUp();
+  const { signIn, fetchStatus } = useSignIn();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [clerkError, setClerkError] = useState<{
+    code: string;
+    message: string;
+  } | null>(null);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  const isLoading = fetchStatus === "fetching";
+  const isLoading = fetchStatus === "fetching" || isGoogleLoading;
+
+  const hasResetRef = useRef(false);
+  useEffect(() => {
+    if (hasResetRef.current) return;
+    hasResetRef.current = true;
+    signIn.reset();
+  }, [signIn]);
 
   useEffect(() => {
     if (isLoaded && isSignedIn) navigate("/app", { replace: true });
@@ -32,11 +48,12 @@ export default function LoginPage() {
     if (fieldErrors[field]) {
       setFieldErrors((prev) => ({ ...prev, [field]: undefined }));
     }
+    if (clerkError) setClerkError(null);
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitError(null);
+    setClerkError(null);
     setFieldErrors({});
 
     const result = loginSchema.safeParse({ email, password });
@@ -58,11 +75,15 @@ export default function LoginPage() {
       });
 
       if (createResult.error) {
-        setSubmitError(
-          createResult.error.message ||
-            createResult.error.longMessage ||
-            "Error al iniciar sesión",
-        );
+        const info = parseClerkApiError(createResult.error);
+        if (info) {
+          setClerkError({ code: info.code, message: info.message });
+        } else {
+          setClerkError({
+            code: "unknown",
+            message: "Error al iniciar sesión",
+          });
+        }
         return;
       }
 
@@ -70,39 +91,67 @@ export default function LoginPage() {
       notify({ success: true, message: "Inicio de sesión exitoso" });
       navigate("/app");
     } catch (err: unknown) {
+      const info = inspectClerkError(err);
+      if (info) {
+        setClerkError({ code: info.code, message: info.message });
+        return;
+      }
       if (err instanceof Error) {
-        setSubmitError(err.message || "Error inesperado");
+        setClerkError({
+          code: "unknown",
+          message: err.message || "Error inesperado",
+        });
       } else {
-        setSubmitError("Error inesperado");
+        setClerkError({ code: "unknown", message: "Error inesperado" });
       }
     }
   }
 
-  const clerkMessage =
-    errors?.global?.[0]?.message || errors?.global?.[0]?.longMessage;
+  const bannerMessages = clerkError ? [clerkError.message] : [];
 
   async function handleGoogleSignIn() {
-    await signUp.sso({
-      strategy: "oauth_google",
-      redirectCallbackUrl: `${window.location.origin}/sso-callback`,
-      redirectUrl: `${window.location.origin}/app`,
-    });
+    setClerkError(null);
+    setIsGoogleLoading(true);
+    try {
+      await signIn.sso({
+        strategy: "oauth_google",
+        redirectCallbackUrl: `${window.location.origin}/sso-callback`,
+        redirectUrl: `${window.location.origin}/app`,
+      });
+    } catch (err: unknown) {
+      setIsGoogleLoading(false);
+      const info = inspectClerkError(err);
+      if (info) {
+        setClerkError({ code: info.code, message: info.message });
+        return;
+      }
+      if (err instanceof Error) {
+        setClerkError({
+          code: "unknown",
+          message: err.message || "Error al iniciar con Google",
+        });
+      } else {
+        setClerkError({
+          code: "unknown",
+          message: "Error al iniciar con Google",
+        });
+      }
+    }
   }
 
   return (
     <AuthLayout title="Inicia sesión" subtitle="Bienvenido de nuevo">
-      <OAuthButtons onGoogle={handleGoogleSignIn} />
+      <OAuthButtons
+        onGoogle={handleGoogleSignIn}
+        isGoogleLoading={isGoogleLoading}
+      />
 
       <div className="my-6">
         <Divider />
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {(submitError || clerkMessage) && (
-          <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
-            {submitError || clerkMessage}
-          </div>
-        )}
+      <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
+        <AuthErrorBanner messages={bannerMessages} />
 
         <div>
           <input
@@ -121,22 +170,13 @@ export default function LoginPage() {
           )}
         </div>
 
-        <div>
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => handleChange("password", e.target.value)}
-            className={`h-12 w-full rounded-xl border-2 px-4 text-sm outline-none transition ${
-              fieldErrors.password
-                ? "border-red-400"
-                : "border-duo-border focus:border-duo-green"
-            }`}
-          />
-          {fieldErrors.password && (
-            <p className="mt-1 text-xs text-red-500">{fieldErrors.password}</p>
-          )}
-        </div>
+        <PasswordInput
+          value={password}
+          onChange={(v) => handleChange("password", v)}
+          placeholder="Contraseña"
+          error={fieldErrors.password}
+          autoComplete="current-password"
+        />
 
         <Link
           to="/forgot-password"

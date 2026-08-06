@@ -1,10 +1,12 @@
 import { useState } from "react";
 import type { z } from "zod";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useSignIn } from "@clerk/react";
 import { notify } from "../../../lib/notify";
 import { forgotPasswordSchema, resetPasswordSchema } from "../auth.schema";
+import { parseClerkApiError } from "../lib/clerk-errors";
 import AuthLayout from "../components/AuthLayout";
+import PasswordInput from "../components/PasswordInput";
 
 type ForgotErrors = Partial<
   Record<keyof z.infer<typeof forgotPasswordSchema>, string>
@@ -21,10 +23,11 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
-  const [fieldErrors, setFieldErrors] = useState<Partial<Record<string, string>>>(
-    {},
-  );
+  const [fieldErrors, setFieldErrors] = useState<
+    Partial<Record<string, string>>
+  >({});
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [verifiedCode, setVerifiedCode] = useState<string | null>(null);
 
   function clearFieldError(field: string) {
     if (fieldErrors[field]) {
@@ -52,25 +55,27 @@ export default function ForgotPasswordPage() {
       const createResult = await signIn.create({ identifier: email });
 
       if (createResult.error) {
-        setSubmitError(
-          createResult.error.message ||
-            createResult.error.longMessage ||
-            "Error al enviar el código",
-        );
+        const info = parseClerkApiError(createResult.error);
+        if (
+          info?.code === "form_identifier_not_found" ||
+          info?.code === "form_email_address_not_found"
+        ) {
+          setStep("reset");
+          return;
+        }
+        setSubmitError(info?.message ?? "Error al enviar el código");
         return;
       }
 
       const sendResult = await signIn.resetPasswordEmailCode.sendCode();
 
       if (sendResult.error) {
-        setSubmitError(
-          sendResult.error.message ||
-            sendResult.error.longMessage ||
-            "Error al enviar el código",
-        );
+        const info = parseClerkApiError(sendResult.error);
+        setSubmitError(info?.message ?? "Error al enviar el código");
         return;
       }
 
+      setVerifiedCode(null);
       setStep("reset");
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -98,31 +103,36 @@ export default function ForgotPasswordPage() {
     }
 
     try {
-      const verifyResult = await signIn.resetPasswordEmailCode.verifyCode({
-        code,
+      if (verifiedCode !== code) {
+        const verifyResult = await signIn.resetPasswordEmailCode.verifyCode({
+          code,
+        });
+
+        if (verifyResult.error) {
+          const info = parseClerkApiError(verifyResult.error);
+          setSubmitError(info?.message ?? "Error al restablecer la contraseña");
+          return;
+        }
+
+        setVerifiedCode(code);
+      }
+
+      const submitResult = await signIn.resetPasswordEmailCode.submitPassword({
+        password,
+        signOutOfOtherSessions: true,
       });
 
-      if (verifyResult.error) {
-        setSubmitError(
-          verifyResult.error.message ||
-            verifyResult.error.longMessage ||
-            "Error al restablecer la contraseña",
-        );
+      if (submitResult.error) {
+        const info = parseClerkApiError(submitResult.error);
+        setSubmitError(info?.message ?? "Error al restablecer la contraseña");
         return;
       }
 
-      const submitResult =
-        await signIn.resetPasswordEmailCode.submitPassword({
-          password,
-          signOutOfOtherSessions: true,
-        });
+      const finalizeResult = await signIn.finalize();
 
-      if (submitResult.error) {
-        setSubmitError(
-          submitResult.error.message ||
-            submitResult.error.longMessage ||
-            "Error al restablecer la contraseña",
-        );
+      if (finalizeResult.error) {
+        const info = parseClerkApiError(finalizeResult.error);
+        setSubmitError(info?.message ?? "Error al restablecer la contraseña");
         return;
       }
 
@@ -152,7 +162,11 @@ export default function ForgotPasswordPage() {
       }
     >
       {step === "email" && (
-        <form onSubmit={handleSendCode} className="flex flex-col gap-4">
+        <form
+          onSubmit={handleSendCode}
+          noValidate
+          className="flex flex-col gap-4"
+        >
           {submitError && (
             <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
               {submitError}
@@ -175,9 +189,7 @@ export default function ForgotPasswordPage() {
               }`}
             />
             {fieldErrors.email && (
-              <p className="mt-1 text-xs text-red-500">
-                {fieldErrors.email}
-              </p>
+              <p className="mt-1 text-xs text-red-500">{fieldErrors.email}</p>
             )}
           </div>
 
@@ -199,7 +211,7 @@ export default function ForgotPasswordPage() {
       )}
 
       {step === "reset" && (
-        <form onSubmit={handleReset} className="flex flex-col gap-4">
+        <form onSubmit={handleReset} noValidate className="flex flex-col gap-4">
           {submitError && (
             <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
               {submitError}
@@ -224,33 +236,21 @@ export default function ForgotPasswordPage() {
               }`}
             />
             {fieldErrors.code && (
-              <p className="mt-1 text-xs text-red-500">
-                {fieldErrors.code}
-              </p>
+              <p className="mt-1 text-xs text-red-500">{fieldErrors.code}</p>
             )}
           </div>
 
-          <div>
-            <input
-              type="password"
-              placeholder="Nueva contraseña"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                clearFieldError("password");
-              }}
-              className={`h-12 w-full rounded-xl border-2 px-4 text-sm outline-none transition ${
-                fieldErrors.password
-                  ? "border-red-400"
-                  : "border-duo-border focus:border-duo-green"
-              }`}
-            />
-            {fieldErrors.password && (
-              <p className="mt-1 text-xs text-red-500">
-                {fieldErrors.password}
-              </p>
-            )}
-          </div>
+          <PasswordInput
+            value={password}
+            onChange={(v) => {
+              setPassword(v);
+              clearFieldError("password");
+            }}
+            placeholder="Nueva contraseña"
+            error={fieldErrors.password}
+            autoComplete="new-password"
+            showStrength
+          />
 
           <button
             type="submit"
@@ -267,12 +267,12 @@ export default function ForgotPasswordPage() {
           <p className="text-center text-sm text-zinc-600">
             Tu contraseña se ha restablecido correctamente.
           </p>
-          <Link
-            to="/login"
+          <NavLink
+            to="/app"
             className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-duo-green font-bold text-white transition hover:bg-duo-green-hover"
           >
-            Iniciar sesión
-          </Link>
+            Continuar
+          </NavLink>
         </div>
       )}
     </AuthLayout>

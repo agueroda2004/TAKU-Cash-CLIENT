@@ -29,6 +29,8 @@ createRoot(document.getElementById("root")!).render(
         publishableKey={PUBLISHABLE_KEY}
         signInForceRedirectUrl="/app"
         signUpForceRedirectUrl="/app"
+        signInFallbackRedirectUrl="/login"
+        signUpFallbackRedirectUrl="/register"
       >
         <BrowserRouter>
           <App />

@@ -19,6 +19,7 @@ export const NAV_BUTTONS = {
   dashboard: "Ir al Dashboard",
   signIn: "Iniciar sesión",
   signUp: "Registrarse",
+  signOut: "Cerrar sesión",
   menuAriaLabel: "Abrir menú",
 } as const;
 

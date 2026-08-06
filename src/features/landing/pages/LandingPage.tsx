@@ -15,6 +15,7 @@ import {
   MapPin,
   Star,
   Quote,
+  LogOut,
 } from "lucide-react";
 import { IMAGES } from "../../../constants/data";
 import {
@@ -37,7 +38,7 @@ import {
 } from "../data/landingData";
 
 function Navbar() {
-  const { isSignedIn, isLoaded } = useAuth();
+  const { isSignedIn, isLoaded, signOut } = useAuth();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -65,12 +66,22 @@ function Navbar() {
 
         <div className="hidden items-center gap-3 md:flex">
           {isLoaded && isSignedIn ? (
-            <button
-              onClick={() => navigate("/app")}
-              className="rounded-xl bg-duo-green px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-duo-green-hover"
-            >
-              {NAV_BUTTONS.dashboard}
-            </button>
+            <>
+              <button
+                onClick={() => navigate("/app")}
+                className="rounded-xl bg-duo-green px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-duo-green-hover"
+              >
+                {NAV_BUTTONS.dashboard}
+              </button>
+              <button
+                onClick={() => signOut()}
+                aria-label={NAV_BUTTONS.signOut}
+                className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold text-zinc-700 transition hover:bg-red-50 hover:text-duo-red"
+              >
+                <LogOut className="h-4 w-4" aria-hidden="true" />
+                {NAV_BUTTONS.signOut}
+              </button>
+            </>
           ) : (
             <>
               <button
@@ -114,12 +125,22 @@ function Navbar() {
           </div>
           <div className="border-t border-zinc-100 px-4 py-4">
             {isLoaded && isSignedIn ? (
-              <button
-                onClick={() => navigate("/app")}
-                className="flex w-full items-center justify-center rounded-xl bg-duo-green px-5 py-2.5 text-sm font-bold text-white"
-              >
-                {NAV_BUTTONS.dashboard}
-              </button>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => navigate("/app")}
+                  className="flex w-full items-center justify-center rounded-xl bg-duo-green px-5 py-2.5 text-sm font-bold text-white"
+                >
+                  {NAV_BUTTONS.dashboard}
+                </button>
+                <button
+                  onClick={() => signOut()}
+                  aria-label={NAV_BUTTONS.signOut}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold text-zinc-700 transition hover:bg-red-50 hover:text-duo-red"
+                >
+                  <LogOut className="h-4 w-4" aria-hidden="true" />
+                  {NAV_BUTTONS.signOut}
+                </button>
+              </div>
             ) : (
               <div className="flex flex-col gap-2">
                 <button

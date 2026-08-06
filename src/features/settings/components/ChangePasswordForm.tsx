@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useUser } from "@clerk/react";
 import { notify } from "../../../lib/notify";
 import { changePasswordSchema } from "../settings.schema";
+import PasswordInput from "../../auth/components/PasswordInput";
+import { inspectClerkError } from "../../auth/lib/clerk-errors";
 
 type FieldErrors = Partial<Record<"currentPassword" | "newPassword" | "confirmPassword", string>>;
 
@@ -56,20 +58,8 @@ export default function ChangePasswordForm() {
       setFields({ ...EMPTY_FIELDS });
       notify({ success: true, message: "Contraseña actualizada" });
     } catch (err) {
-      const clerkError = err as {
-        errors?: { code?: string; longMessage?: string }[];
-        message?: string;
-      };
-      const code = clerkError?.errors?.[0]?.code ?? "";
-      if (code.toLowerCase().includes("pass")) {
-        setSubmitError("La contraseña actual es incorrecta");
-      } else {
-        setSubmitError(
-          clerkError?.errors?.[0]?.longMessage ??
-            clerkError?.message ??
-            "Error al actualizar la contraseña",
-        );
-      }
+      const info = inspectClerkError(err);
+      setSubmitError(info?.message ?? "Error al actualizar la contraseña");
     } finally {
       setIsSubmitting(false);
     }
@@ -87,40 +77,27 @@ export default function ChangePasswordForm() {
         <label className="mb-1.5 block text-sm font-medium text-zinc-700">
           Contraseña actual
         </label>
-        <input
-          type="password"
+        <PasswordInput
           value={fields.currentPassword}
-          onChange={(e) => handleChange("currentPassword", e.target.value)}
-          className={`h-11 w-full rounded-xl border-2 px-4 text-sm outline-none transition ${
-            fieldErrors.currentPassword
-              ? "border-red-400"
-              : "border-zinc-200 focus:border-duo-green"
-          }`}
+          onChange={(v) => handleChange("currentPassword", v)}
+          placeholder="Contraseña actual"
+          autoComplete="current-password"
+          error={fieldErrors.currentPassword}
         />
-        {fieldErrors.currentPassword && (
-          <p className="mt-1 text-xs text-red-500">
-            {fieldErrors.currentPassword}
-          </p>
-        )}
       </div>
 
       <div>
         <label className="mb-1.5 block text-sm font-medium text-zinc-700">
           Nueva contraseña
         </label>
-        <input
-          type="password"
+        <PasswordInput
           value={fields.newPassword}
-          onChange={(e) => handleChange("newPassword", e.target.value)}
-          className={`h-11 w-full rounded-xl border-2 px-4 text-sm outline-none transition ${
-            fieldErrors.newPassword
-              ? "border-red-400"
-              : "border-zinc-200 focus:border-duo-green"
-          }`}
+          onChange={(v) => handleChange("newPassword", v)}
+          placeholder="Nueva contraseña"
+          autoComplete="new-password"
+          error={fieldErrors.newPassword}
+          showStrength
         />
-        {fieldErrors.newPassword && (
-          <p className="mt-1 text-xs text-red-500">{fieldErrors.newPassword}</p>
-        )}
         <p className="mt-1.5 text-xs text-zinc-400">
           Mínimo 8 caracteres.
         </p>
@@ -130,21 +107,13 @@ export default function ChangePasswordForm() {
         <label className="mb-1.5 block text-sm font-medium text-zinc-700">
           Confirmar nueva contraseña
         </label>
-        <input
-          type="password"
+        <PasswordInput
           value={fields.confirmPassword}
-          onChange={(e) => handleChange("confirmPassword", e.target.value)}
-          className={`h-11 w-full rounded-xl border-2 px-4 text-sm outline-none transition ${
-            fieldErrors.confirmPassword
-              ? "border-red-400"
-              : "border-zinc-200 focus:border-duo-green"
-          }`}
+          onChange={(v) => handleChange("confirmPassword", v)}
+          placeholder="Confirmar contraseña"
+          autoComplete="new-password"
+          error={fieldErrors.confirmPassword}
         />
-        {fieldErrors.confirmPassword && (
-          <p className="mt-1 text-xs text-red-500">
-            {fieldErrors.confirmPassword}
-          </p>
-        )}
       </div>
 
       <div className="flex justify-end">
