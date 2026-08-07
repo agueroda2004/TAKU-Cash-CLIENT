@@ -7,6 +7,7 @@ import CategoryFiltersBar from "../components/CategoryFiltersBar";
 import UpdateCategoryModal from "../components/UpdateCategoryModal";
 import DeleteCategoryModal from "../components/DeleteCategoryModal";
 import { useCategory } from "../hooks/useCategory";
+import { notify } from "../../../lib/notify";
 import type { Category } from "../types";
 
 function LoadingSkeleton() {
@@ -58,9 +59,25 @@ export default function CategoryPage() {
     isFetching,
     error,
     refetch,
+    updateCategory,
   } = useCategory();
 
   const hasFilters = !!filters.name || !!filters.type;
+
+  async function handleReactivate(category: Category) {
+    try {
+      await updateCategory({ id: category.id, data: { isActive: true } });
+      notify({ success: true, message: "Categoría reactivada" });
+    } catch (err) {
+      notify({
+        success: false,
+        message:
+          err instanceof Error
+            ? err.message
+            : "Error al reactivar la categoría",
+      });
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -96,6 +113,7 @@ export default function CategoryPage() {
                   category={category}
                   onEdit={() => setEditingCategory(category)}
                   onDelete={() => setDeletingCategory(category)}
+                  onReactivate={() => handleReactivate(category)}
                 />
               ))}
             </div>
