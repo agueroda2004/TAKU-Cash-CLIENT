@@ -1,17 +1,25 @@
 import { z } from "zod";
 import { ACCOUNT_TYPES, ACCOUNT_STATUSES, ICONS } from "./components/constants";
 import { CURRENCIES, COLORS } from "../../constants/data";
+import type { AccountStatus } from "./components/constants";
 
 const validTypes: Set<string> = new Set(ACCOUNT_TYPES.map((t) => t.value));
 const validCurrencies: Set<string> = new Set(CURRENCIES.map((c) => c.value));
 const validColors: Set<string> = new Set(COLORS.map((c) => c.value));
 const validIcons: Set<string> = new Set(ICONS.map((i) => i.value));
-const validStatuses = ACCOUNT_STATUSES.map((s) => s.value) as [
-  string,
-  ...string[],
-];
+const validStatuses: [AccountStatus, ...AccountStatus[]] = [
+  ACCOUNT_STATUSES[0].value,
+  ...ACCOUNT_STATUSES.slice(1).map((s) => s.value),
+] as [AccountStatus, ...AccountStatus[]];
 
-export const accountFiltersSchema = z.object({
+export type AccountDraft = {
+  name: string;
+  type: string | null;
+  currency: string | null;
+  status: AccountStatus;
+};
+
+export const accountDraftSchema = z.object({
   name: z.string().max(100, "El nombre no puede tener más de 100 caracteres"),
   type: z
     .string()
@@ -22,6 +30,21 @@ export const accountFiltersSchema = z.object({
     .refine((val) => validCurrencies.has(val), "Moneda inválida")
     .nullable(),
   status: z.enum(validStatuses, "Estado inválido"),
+});
+
+export const accountFiltersSchema = z.object({
+  name: z.string().optional(),
+  type: z
+    .string()
+    .refine((val) => !val || validTypes.has(val), "Tipo de cuenta inválido")
+    .optional(),
+  currency: z
+    .string()
+    .refine((val) => !val || validCurrencies.has(val), "Moneda inválida")
+    .optional(),
+  isActive: z.boolean().optional(),
+  page: z.number().int().positive(),
+  pageSize: z.number().int().positive(),
 });
 
 export function createTransferSchema(params: {
