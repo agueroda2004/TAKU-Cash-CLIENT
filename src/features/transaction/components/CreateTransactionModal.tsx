@@ -284,7 +284,7 @@ export default function CreateTransactionModal({ open, onCancel }: Props) {
               setAmount(e.target.value);
               clearFieldError("amount");
             }}
-            className={`h-11 w-full rounded-xl border-2 px-4 text-sm outline-none transition ${
+            className={`h-11 w-full rounded-xl border-2 px-4 text-base outline-none transition md:text-sm ${
               fieldErrors.amount
                 ? "border-red-400"
                 : "border-zinc-200 focus:border-duo-green"
@@ -330,11 +330,37 @@ export default function CreateTransactionModal({ open, onCancel }: Props) {
           </label>
           <input
             type="text"
+            maxLength={200}
             placeholder="Ej: Almuerzo con amigos"
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="h-11 w-full rounded-xl border-2 border-zinc-200 px-4 text-sm outline-none transition focus:border-duo-green"
+            onChange={(e) => {
+              setDescription(e.target.value);
+              clearFieldError("description");
+            }}
+            className={`h-11 w-full rounded-xl border-2 px-4 text-base outline-none transition md:text-sm ${
+              fieldErrors.description
+                ? "border-red-400"
+                : "border-zinc-200 focus:border-duo-green"
+            }`}
           />
+          <div className="mt-1 flex items-center justify-between gap-2">
+            {fieldErrors.description ? (
+              <p className="text-xs text-red-500">{fieldErrors.description}</p>
+            ) : (
+              <span />
+            )}
+            <p
+              className={`text-xs ${
+                description.length >= 200
+                  ? "text-red-500"
+                  : description.length >= 160
+                    ? "text-amber-500"
+                    : "text-zinc-400"
+              }`}
+            >
+              {description.length}/200
+            </p>
+          </div>
         </div>
       </div>
     </Modal>
