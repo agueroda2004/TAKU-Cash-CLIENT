@@ -11,6 +11,7 @@ import {
   MoreVertical,
   Pencil,
   Trash2,
+  RotateCcw,
 } from "lucide-react";
 import { formatCurrency } from "../../../utils/currency";
 import { ACCOUNT_TYPES } from "./constants";
@@ -35,6 +36,7 @@ type Props = {
   onTransfer: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  onReactivate: () => void;
 };
 
 export default function AccountCard({
@@ -42,9 +44,26 @@ export default function AccountCard({
   onTransfer,
   onEdit,
   onDelete,
+  onReactivate,
 }: Props) {
   const Icon = ICON_MAP[account.icon];
   const [menuOpen, setMenuOpen] = useState(false);
+  const isInactive = !account.isActive;
+
+  function triggerEdit() {
+    setMenuOpen(false);
+    onEdit();
+  }
+
+  function triggerDelete() {
+    setMenuOpen(false);
+    onDelete();
+  }
+
+  function triggerReactivate() {
+    setMenuOpen(false);
+    onReactivate();
+  }
 
   return (
     <div
@@ -67,12 +86,12 @@ export default function AccountCard({
             )}
           </div>
 
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <p className="font-semibold text-zinc-800 truncate">
+              <p className="truncate font-semibold text-zinc-800">
                 {account.name}
               </p>
-              {!account.isActive && (
+              {isInactive && (
                 <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
                   Inactiva
                 </span>
@@ -90,60 +109,34 @@ export default function AccountCard({
           </p>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={onTransfer}
-              title="Transferir"
-              className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-zinc-200 text-zinc-400 transition hover:border-duo-green hover:text-duo-green"
-            >
-              <ArrowLeftRight className="h-4 w-4" />
-            </button>
-
-            <div className="relative">
+            {isInactive ? (
               <button
                 type="button"
-                onClick={() => setMenuOpen((v) => !v)}
-                title="Más acciones"
-                aria-label="Más acciones"
-                aria-expanded={menuOpen}
-                className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-zinc-200 text-zinc-400 transition hover:border-zinc-300 hover:text-zinc-600"
+                onClick={onReactivate}
+                title="Reactivar"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-zinc-200 text-zinc-400 transition hover:border-duo-green hover:text-duo-green"
               >
-                <MoreVertical className="h-4 w-4" />
+                <RotateCcw className="h-4 w-4" />
               </button>
+            ) : (
+              <button
+                type="button"
+                onClick={onTransfer}
+                title="Transferir"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-zinc-200 text-zinc-400 transition hover:border-duo-green hover:text-duo-green"
+              >
+                <ArrowLeftRight className="h-4 w-4" />
+              </button>
+            )}
 
-              {menuOpen && (
-                <>
-                  <div
-                    className="fixed inset-0 z-20"
-                    onClick={() => setMenuOpen(false)}
-                  />
-                  <div className="absolute right-0 top-full z-30 mt-1 w-44 overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-lg">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMenuOpen(false);
-                        onEdit();
-                      }}
-                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-zinc-700 transition hover:bg-zinc-50"
-                    >
-                      <Pencil className="h-4 w-4 text-zinc-500" />
-                      Editar
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMenuOpen(false);
-                        onDelete();
-                      }}
-                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-duo-red transition hover:bg-red-50"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      Eliminar
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
+            <MoreMenu
+              open={menuOpen}
+              onToggle={() => setMenuOpen((v) => !v)}
+              isInactive={isInactive}
+              onEdit={triggerEdit}
+              onDelete={triggerDelete}
+              onReactivate={triggerReactivate}
+            />
           </div>
         </div>
       </div>
@@ -159,12 +152,12 @@ export default function AccountCard({
           {Icon ? <Icon className="h-5 w-5" /> : <Wallet className="h-5 w-5" />}
         </div>
 
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <p className="font-semibold text-zinc-800 truncate">
+            <p className="truncate font-semibold text-zinc-800">
               {account.name}
             </p>
-            {!account.isActive && (
+            {isInactive && (
               <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
                 Inactiva
               </span>
@@ -179,62 +172,103 @@ export default function AccountCard({
           <p className="font-bold text-zinc-800">
             {formatCurrency(account.balance, account.currency)}
           </p>
-          <button
-            type="button"
-            onClick={onTransfer}
-            title="Transferir"
-            className="flex h-9 w-9 items-center justify-center rounded-xl border-2 border-zinc-200 text-zinc-400 transition hover:border-duo-green hover:text-duo-green"
-          >
-            <ArrowLeftRight className="h-4 w-4" />
-          </button>
-
-          <div className="relative">
+          {isInactive ? (
             <button
               type="button"
-              onClick={() => setMenuOpen((v) => !v)}
-              title="Más acciones"
-              aria-label="Más acciones"
-              aria-expanded={menuOpen}
-              className="flex h-9 w-9 items-center justify-center rounded-xl border-2 border-zinc-200 text-zinc-400 transition hover:border-zinc-300 hover:text-zinc-600"
+              onClick={onReactivate}
+              title="Reactivar"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border-2 border-zinc-200 text-zinc-400 transition hover:border-duo-green hover:text-duo-green"
             >
-              <MoreVertical className="h-4 w-4" />
+              <RotateCcw className="h-4 w-4" />
             </button>
+          ) : (
+            <button
+              type="button"
+              onClick={onTransfer}
+              title="Transferir"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border-2 border-zinc-200 text-zinc-400 transition hover:border-duo-green hover:text-duo-green"
+            >
+              <ArrowLeftRight className="h-4 w-4" />
+            </button>
+          )}
 
-            {menuOpen && (
-              <>
-                <div
-                  className="fixed inset-0 z-20"
-                  onClick={() => setMenuOpen(false)}
-                />
-                <div className="absolute right-0 top-full z-30 mt-1 w-44 overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-lg">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      onEdit();
-                    }}
-                    className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-zinc-700 transition hover:bg-zinc-50"
-                  >
-                    <Pencil className="h-4 w-4 text-zinc-500" />
-                    Editar
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      onDelete();
-                    }}
-                    className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-duo-red transition hover:bg-red-50"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    Eliminar
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
+          <MoreMenu
+            open={menuOpen}
+            onToggle={() => setMenuOpen((v) => !v)}
+            isInactive={isInactive}
+            onEdit={triggerEdit}
+            onDelete={triggerDelete}
+            onReactivate={triggerReactivate}
+          />
         </div>
       </div>
+    </div>
+  );
+}
+
+type MoreMenuProps = {
+  open: boolean;
+  onToggle: () => void;
+  isInactive: boolean;
+  onEdit: () => void;
+  onDelete: () => void;
+  onReactivate: () => void;
+};
+
+function MoreMenu({
+  open,
+  onToggle,
+  isInactive,
+  onEdit,
+  onDelete,
+  onReactivate,
+}: MoreMenuProps) {
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={onToggle}
+        title="Más acciones"
+        aria-label="Más acciones"
+        aria-expanded={open}
+        className="flex h-9 w-9 items-center justify-center rounded-xl border-2 border-zinc-200 text-zinc-400 transition hover:border-zinc-300 hover:text-zinc-600 sm:h-9 sm:w-9"
+      >
+        <MoreVertical className="h-4 w-4" />
+      </button>
+
+      {open && (
+        <>
+          <div className="fixed inset-0 z-20" onClick={onToggle} />
+          <div className="absolute right-0 top-full z-30 mt-1 w-44 overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-lg">
+            {isInactive && (
+              <button
+                type="button"
+                onClick={onReactivate}
+                className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-zinc-700 transition hover:bg-zinc-50"
+              >
+                <RotateCcw className="h-4 w-4 text-zinc-500" />
+                Reactivar
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onEdit}
+              className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-zinc-700 transition hover:bg-zinc-50"
+            >
+              <Pencil className="h-4 w-4 text-zinc-500" />
+              Editar
+            </button>
+            <button
+              type="button"
+              onClick={onDelete}
+              className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-duo-red transition hover:bg-red-50"
+            >
+              <Trash2 className="h-4 w-4" />
+              Eliminar
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

@@ -8,6 +8,7 @@ import UpdateAccountModal from "../components/UpdateAccountModal";
 import DeleteAccountModal from "../components/DeleteAccountModal";
 import AccountFiltersBar from "../components/AccountFiltersBar";
 import { useAccount } from "../hooks/useAccount";
+import { notify } from "../../../lib/notify";
 import type { Account } from "../types";
 
 function LoadingSkeleton() {
@@ -50,9 +51,22 @@ export default function AccountPage() {
     isFetching,
     error,
     refetch,
+    updateAccount,
   } = useAccount();
 
   const showEmpty = !isLoading && !error && totalItems === 0;
+
+  async function handleReactivate(account: Account) {
+    try {
+      await updateAccount({ id: account.id, data: { isActive: true } });
+      notify({ success: true, message: "Cuenta reactivada" });
+    } catch (err) {
+      notify({
+        success: false,
+        message: err instanceof Error ? err.message : "Error al reactivar la cuenta",
+      });
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -105,6 +119,7 @@ export default function AccountPage() {
                 onTransfer={() => setTransferFrom(account)}
                 onEdit={() => setEditingAccount(account)}
                 onDelete={() => setDeletingAccount(account)}
+                onReactivate={() => handleReactivate(account)}
               />
             ))}
           </div>

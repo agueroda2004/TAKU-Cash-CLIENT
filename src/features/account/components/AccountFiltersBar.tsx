@@ -4,7 +4,7 @@ import Dropdown from "../../../shared/ui/Dropdown";
 import { ACCOUNT_TYPES, ACCOUNT_STATUSES } from "./constants";
 import { CURRENCIES } from "../../../constants/data";
 import { notify } from "../../../lib/notify";
-import { accountFiltersSchema } from "../account.schema";
+import { accountDraftSchema } from "../account.schema";
 import type { CurrencyCode } from "../../../constants/data";
 import type { AccountStatus } from "./constants";
 import type { AccountFilters, AccountType } from "../types";
@@ -46,14 +46,21 @@ function draftToFilters(draft: DraftFilters, pageSize: number): AccountFilters {
 export default function AccountFiltersBar({ filters, onApply }: Props) {
   const [draft, setDraft] = useState<DraftFilters>(() => buildDraft(filters));
 
-  const hasDraftFilters =
-    !!draft.name.trim() ||
-    !!draft.type ||
-    !!draft.currency ||
-    draft.status === "inactive";
+  const appliedDraft = buildDraft(filters);
+  const draftDiffers =
+    draft.name.trim() !== appliedDraft.name ||
+    draft.type !== appliedDraft.type ||
+    draft.currency !== appliedDraft.currency ||
+    draft.status !== appliedDraft.status;
+
+  const hasAppliedFilters =
+    !!filters.name ||
+    !!filters.type ||
+    !!filters.currency ||
+    filters.isActive === false;
 
   function handleApply() {
-    const result = accountFiltersSchema.safeParse(draft);
+    const result = accountDraftSchema.safeParse(draft);
     if (!result.success) {
       const firstError = result.error.issues[0]?.message;
       if (firstError) notify({ success: false, message: firstError });
@@ -113,14 +120,14 @@ export default function AccountFiltersBar({ filters, onApply }: Props) {
         <button
           type="button"
           onClick={handleApply}
-          disabled={!hasDraftFilters}
+          disabled={!draftDiffers}
           className="inline-flex h-10 items-center gap-2 rounded-xl bg-duo-green px-4 text-sm font-bold text-white transition hover:bg-duo-green/90 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-400"
         >
           <Filter className="h-4 w-4" />
           Filtrar
         </button>
 
-        {hasDraftFilters && (
+        {hasAppliedFilters && (
           <button
             type="button"
             onClick={handleClear}
