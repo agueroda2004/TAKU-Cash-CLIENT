@@ -41,3 +41,16 @@ export const updateCategorySchema = z.object({
     .refine((val) => validIcons.has(val), "Icono inválido"),
   isActive: z.boolean().optional(),
 });
+
+/** Max length allowed for a subcategory name. Mirrors the DB `VarChar(100)` and the server schema. */
+export const MAX_SUBCATEGORY_NAME_LENGTH = 100;
+
+/** Zod schema for validating a single subcategory name (used by the modals for per-field checks). */
+export const subcategoryNameSchema = z
+  .string()
+  .trim()
+  .nonempty("El nombre es obligatorio")
+  .max(
+    MAX_SUBCATEGORY_NAME_LENGTH,
+    "El nombre no puede tener más de 100 caracteres",
+  );

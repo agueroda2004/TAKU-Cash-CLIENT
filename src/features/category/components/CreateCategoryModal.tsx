@@ -5,7 +5,10 @@ import Modal from "../../../shared/ui/Modal";
 import Dropdown from "../../../shared/ui/Dropdown";
 import { notify } from "../../../lib/notify";
 import { useCategory } from "../hooks/useCategory";
-import { createCategorySchema } from "../category.schema";
+import {
+  createCategorySchema,
+  MAX_SUBCATEGORY_NAME_LENGTH,
+} from "../category.schema";
 import type { CategoryType } from "../types";
 import { CATEGORY_COLORS, CATEGORY_ICONS } from "./constants";
 
@@ -48,6 +51,9 @@ export default function CreateCategoryModal({ open, onCancel }: Props) {
   const trimmedNames = subcategoryDrafts.map((d) => d.name.trim());
   const hasDuplicateNames = new Set(trimmedNames).size !== trimmedNames.length;
   const hasEmptyName = trimmedNames.some((n) => n.length === 0);
+  const hasTooLongName = subcategoryDrafts.some(
+    (d) => d.name.length > MAX_SUBCATEGORY_NAME_LENGTH,
+  );
 
   const isValid =
     name.trim().length > 0 &&
@@ -55,7 +61,8 @@ export default function CreateCategoryModal({ open, onCancel }: Props) {
     color !== null &&
     icon !== null &&
     !hasDuplicateNames &&
-    !hasEmptyName;
+    !hasEmptyName &&
+    !hasTooLongName;
 
   if (!open) return null;
 
@@ -289,11 +296,12 @@ export default function CreateCategoryModal({ open, onCancel }: Props) {
                 <input
                   type="text"
                   value={d.name}
+                  maxLength={MAX_SUBCATEGORY_NAME_LENGTH}
                   onChange={(e) =>
                     updateSubcategoryName(d.clientId, e.target.value)
                   }
                   placeholder="Nombre de la subcategoría"
-                  className="h-10 flex-1 rounded-xl border-2 border-zinc-200 px-3 text-sm outline-none transition focus:border-duo-green"
+                  className="h-10 flex-1 rounded-xl border-2 border-zinc-200 px-3 text-base outline-none transition focus:border-duo-green md:text-sm"
                 />
                 <button
                   type="button"
@@ -315,6 +323,12 @@ export default function CreateCategoryModal({ open, onCancel }: Props) {
           {!hasDuplicateNames && hasEmptyName && (
             <p className="mt-2 text-xs text-red-500">
               Todas las subcategorías deben tener nombre.
+            </p>
+          )}
+          {!hasDuplicateNames && !hasEmptyName && hasTooLongName && (
+            <p className="mt-2 text-xs text-red-500">
+              Alguna subcategoría supera los {MAX_SUBCATEGORY_NAME_LENGTH}{" "}
+              caracteres.
             </p>
           )}
         </div>

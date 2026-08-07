@@ -4,7 +4,10 @@ import Overlay from "../../../shared/ui/Overlay";
 import { notify } from "../../../lib/notify";
 import { ErrorCode, isApiErrorCode } from "../../../lib/error-codes";
 import { useCategory } from "../hooks/useCategory";
-import { updateCategorySchema } from "../category.schema";
+import {
+  updateCategorySchema,
+  MAX_SUBCATEGORY_NAME_LENGTH,
+} from "../category.schema";
 import { CATEGORY_ICONS, CATEGORY_COLORS } from "./constants";
 import type { Category } from "../types";
 
@@ -106,13 +109,17 @@ export default function UpdateCategoryModal({ open, category, onCancel }: Props)
   const trimmedNames = visibleDrafts.map((d) => d.name.trim());
   const hasDuplicateNames = new Set(trimmedNames).size !== trimmedNames.length;
   const hasEmptyName = trimmedNames.some((n) => n.length === 0);
+  const hasTooLongName = visibleDrafts.some(
+    (d) => d.name.length > MAX_SUBCATEGORY_NAME_LENGTH,
+  );
 
   const isValid =
     name.trim().length > 0 &&
     color !== null &&
     icon !== null &&
     !hasDuplicateNames &&
-    !hasEmptyName;
+    !hasEmptyName &&
+    !hasTooLongName;
 
   if (!open || !category) return null;
   const currentCategory = category;
@@ -406,9 +413,10 @@ export default function UpdateCategoryModal({ open, category, onCancel }: Props)
                       <input
                         type="text"
                         value={d.name}
+                        maxLength={MAX_SUBCATEGORY_NAME_LENGTH}
                         onChange={(e) => updateDraftName(key, e.target.value)}
                         placeholder="Nombre"
-                        className="h-10 flex-1 rounded-xl border-2 border-zinc-200 px-3 text-sm outline-none transition focus:border-duo-green"
+                        className="h-10 flex-1 rounded-xl border-2 border-zinc-200 px-3 text-base outline-none transition focus:border-duo-green md:text-sm"
                       />
                       {d.kind === "existing" && (
                         <button
@@ -493,6 +501,12 @@ export default function UpdateCategoryModal({ open, category, onCancel }: Props)
             {!hasDuplicateNames && hasEmptyName && (
               <p className="mt-2 text-xs text-red-500">
                 Todas las subcategorías deben tener nombre.
+              </p>
+            )}
+            {!hasDuplicateNames && !hasEmptyName && hasTooLongName && (
+              <p className="mt-2 text-xs text-red-500">
+                Alguna subcategoría supera los {MAX_SUBCATEGORY_NAME_LENGTH}{" "}
+                caracteres.
               </p>
             )}
           </div>
