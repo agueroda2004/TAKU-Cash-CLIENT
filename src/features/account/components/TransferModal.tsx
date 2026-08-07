@@ -179,7 +179,7 @@ export default function TransferModal({ open, onCancel, fromAccount }: Props) {
               setAmount(e.target.value);
               clearFieldError("amount");
             }}
-            className={`h-11 w-full rounded-xl border-2 px-4 text-base text-sm outline-none transition md:text-sm ${
+            className={`h-11 w-full rounded-xl border-2 px-4 text-base outline-none transition md:text-sm ${
               fieldErrors.amount
                 ? "border-red-400"
                 : "border-zinc-200 focus:border-duo-green"
@@ -220,7 +220,7 @@ export default function TransferModal({ open, onCancel, fromAccount }: Props) {
                 setExchangeRate(e.target.value);
                 clearFieldError("exchangeRate");
               }}
-              className={`h-11 w-full rounded-xl border-2 px-4 text-base text-sm outline-none transition md:text-sm ${
+              className={`h-11 w-full rounded-xl border-2 px-4 text-base outline-none transition md:text-sm ${
                 fieldErrors.exchangeRate
                   ? "border-red-400"
                   : "border-zinc-200 focus:border-duo-green"
@@ -255,7 +255,7 @@ export default function TransferModal({ open, onCancel, fromAccount }: Props) {
               clearFieldError("description");
               autoGrow();
             }}
-            className={`w-full resize-none rounded-xl border-2 px-4 py-2.5 text-base text-sm outline-none transition md:text-sm ${
+            className={`w-full resize-none rounded-xl border-2 px-4 py-2.5 text-base outline-none transition md:text-sm ${
               fieldErrors.description
                 ? "border-red-400 focus:border-red-400"
                 : "border-zinc-200 focus:border-duo-green"

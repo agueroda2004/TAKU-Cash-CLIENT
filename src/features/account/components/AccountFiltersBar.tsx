@@ -92,7 +92,7 @@ export default function AccountFiltersBar({ filters, onApply }: Props) {
             if (e.key === "Enter") handleApply();
           }}
           placeholder="Buscar por nombre..."
-          className="h-11 w-full rounded-xl border-2 border-zinc-200 bg-white pl-11 pr-4 text-sm outline-none transition placeholder:text-zinc-400 focus:border-duo-green"
+          className="h-11 w-full rounded-xl border-2 border-zinc-200 bg-white pl-11 pr-4 text-base outline-none transition placeholder:text-zinc-400 focus:border-duo-green md:text-sm"
         />
       </div>
 

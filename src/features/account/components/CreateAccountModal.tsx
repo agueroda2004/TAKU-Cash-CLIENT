@@ -102,7 +102,7 @@ export default function CreateAccountModal({ open, onCancel }: Props) {
   return (
     <Overlay>
       <div
-        className="z-50 mx-4 flex max-h-[85vh] w-full max-w-lg flex-col rounded-2xl bg-white shadow-xl"
+        className="z-50 mx-4 flex max-h-[70vh] w-full max-w-lg flex-col rounded-2xl bg-white shadow-xl"
         role="dialog"
         aria-modal="true"
       >
@@ -121,20 +121,20 @@ export default function CreateAccountModal({ open, onCancel }: Props) {
             <label className="mb-1.5 block text-sm font-medium text-zinc-700">
               Nombre
             </label>
-            <input
-              type="text"
-              placeholder="Ej: Mi cuenta principal"
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-                clearFieldError("name");
-              }}
-              className={`h-11 w-full rounded-xl border-2 px-4 text-base text-sm outline-none transition md:text-sm ${
-                fieldErrors.name
-                  ? "border-red-400"
-                  : "border-zinc-200 focus:border-duo-green"
-              }`}
-            />
+          <input
+            type="text"
+            placeholder="Ej: Mi cuenta principal"
+            value={name}
+            onChange={(e) => {
+              setName(e.target.value);
+              clearFieldError("name");
+            }}
+            className={`h-11 w-full rounded-xl border-2 px-4 text-base outline-none transition md:text-sm ${
+              fieldErrors.name
+                ? "border-red-400"
+                : "border-zinc-200 focus:border-duo-green"
+            }`}
+          />
             {fieldErrors.name && (
               <p className="mt-1 text-xs text-red-500">{fieldErrors.name}</p>
             )}
@@ -194,7 +194,7 @@ export default function CreateAccountModal({ open, onCancel }: Props) {
                 setBalance(e.target.value);
                 clearFieldError("balance");
               }}
-              className={`h-11 w-full rounded-xl border-2 px-4 text-base text-sm outline-none transition md:text-sm ${
+              className={`h-11 w-full rounded-xl border-2 px-4 text-base outline-none transition md:text-sm ${
                 fieldErrors.balance
                   ? "border-red-400"
                   : "border-zinc-200 focus:border-duo-green"
