@@ -141,7 +141,19 @@ export default function CreateTransactionModal({ open, onCancel }: Props) {
 
   if (!open) return null;
 
-  const isValid = accountId && categoryId && amount && Number(amount) > 0;
+  const numericAmount = Number(amount);
+  const insufficientFunds =
+    type === "EXPENSE" &&
+    !!selectedAccount &&
+    numericAmount > 0 &&
+    numericAmount > selectedAccount.balance;
+
+  const isValid =
+    accountId &&
+    categoryId &&
+    amount &&
+    numericAmount > 0 &&
+    !insufficientFunds;
 
   return (
     <Modal
@@ -281,6 +293,12 @@ export default function CreateTransactionModal({ open, onCancel }: Props) {
           {amount && Number(amount) > 0 && selectedAccount && (
             <p className="mt-1.5 text-xs text-zinc-500">
               {formatCurrency(Number(amount), selectedAccount.currency)}
+            </p>
+          )}
+          {insufficientFunds && selectedAccount && (
+            <p className="mt-1 text-xs text-red-500">
+              El gasto supera el saldo disponible de la cuenta (
+              {formatCurrency(selectedAccount.balance, selectedAccount.currency)}).
             </p>
           )}
           {fieldErrors.amount && (
