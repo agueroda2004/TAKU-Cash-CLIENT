@@ -263,7 +263,7 @@ export default function AdminPage() {
         <Modal
           title={`Editar suscripción: ${selectedUser.email}`}
           onCancel={closeModal}
-          confirmText="Guardar"
+          confirmText={isSettingSubscription ? "Guardando..." : "Guardar"}
           onConfirm={handleConfirm}
           confirmDisabled={!formStatus}
           confirmLoading={isSettingSubscription}

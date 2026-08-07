@@ -144,7 +144,7 @@ export default function CreateCategoryModal({ open, onCancel }: Props) {
     <Modal
       title="Crear categoría"
       onCancel={handleCancel}
-      confirmText="Crear"
+      confirmText={isCreating ? "Creando..." : "Crear"}
       onConfirm={handleCreate}
       confirmDisabled={!isValid || isCreating}
       confirmLoading={isCreating}

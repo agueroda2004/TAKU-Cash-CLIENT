@@ -3,7 +3,7 @@ import type { z } from "zod";
 import Modal from "../../../shared/ui/Modal";
 import Dropdown from "../../../shared/ui/Dropdown";
 import DatePicker from "../../../shared/ui/DatePicker";
-import { formatCurrency } from "../../../utils/currency";
+import { formatCurrency, MAX_FORMAT_AMOUNT } from "../../../utils/currency";
 import { notify } from "../../../lib/notify";
 import AccountDropdown from "../../account/components/AccountDropdown";
 import CategoryDropdown from "../../category/components/CategoryDropdown";
@@ -147,7 +147,7 @@ export default function CreateTransactionModal({ open, onCancel }: Props) {
     <Modal
       title="Nueva transacción"
       onCancel={handleCancel}
-      confirmText="Crear"
+      confirmText={isCreating ? "Creando..." : "Crear"}
       onConfirm={handleCreate}
       confirmDisabled={!isValid || isCreating}
       confirmLoading={isCreating}
@@ -265,6 +265,7 @@ export default function CreateTransactionModal({ open, onCancel }: Props) {
             type="number"
             step="0.01"
             min="0"
+            max={MAX_FORMAT_AMOUNT}
             placeholder="0.00"
             value={amount}
             onChange={(e) => {

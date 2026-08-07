@@ -47,7 +47,7 @@ export default function Modal({
               disabled={confirmDisabled || confirmLoading}
               className="rounded-xl bg-duo-green px-5 py-2.5 text-sm font-bold text-white transition hover:bg-duo-green-hover disabled:opacity-50"
             >
-              {confirmLoading ? "Creando..." : confirmText}
+              {confirmText}
             </button>
           )}
         </div>

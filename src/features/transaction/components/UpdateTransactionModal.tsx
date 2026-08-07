@@ -54,7 +54,7 @@ export default function UpdateTransactionModal({
     <Modal
       title="Editar transacción"
       onCancel={onCancel}
-      confirmText="Guardar"
+      confirmText={isUpdating ? "Guardando..." : "Guardar"}
       onConfirm={handleSave}
       confirmDisabled={isUpdating}
       confirmLoading={isUpdating}
