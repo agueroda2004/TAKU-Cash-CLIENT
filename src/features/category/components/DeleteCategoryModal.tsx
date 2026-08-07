@@ -69,7 +69,7 @@ export default function DeleteCategoryModal({
   return (
     <Overlay>
       <div
-        className="z-50 mx-4 w-full max-w-2xl rounded-2xl bg-white shadow-xl"
+        className="z-50 w-full max-w-2xl rounded-2xl bg-white shadow-xl"
         role="dialog"
         aria-modal="true"
       >

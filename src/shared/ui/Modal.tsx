@@ -24,7 +24,7 @@ export default function Modal({
   return (
     <Overlay>
       <div
-        className="z-50 mx-4 flex max-h-[95vh] w-full max-w-lg flex-col rounded-2xl bg-white shadow-xl"
+        className="z-50 flex max-h-[85%] w-full max-w-lg flex-col rounded-2xl bg-white shadow-xl"
         role="dialog"
         aria-modal="true"
       >
@@ -32,7 +32,9 @@ export default function Modal({
           <h2 className="text-lg font-bold text-zinc-800">{title}</h2>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">{children}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+          {children}
+        </div>
 
         <div className="flex shrink-0 justify-end gap-3 border-t border-zinc-100 px-6 py-4">
           <button
