@@ -184,7 +184,6 @@ export default function CreateAccountModal({ open, onCancel }: Props) {
             </label>
             <input
               type="number"
-              inputMode="decimal"
               step="0.01"
               min="0"
               max={MAX_FORMAT_AMOUNT}

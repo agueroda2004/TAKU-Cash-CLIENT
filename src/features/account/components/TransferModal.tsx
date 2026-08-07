@@ -169,7 +169,6 @@ export default function TransferModal({ open, onCancel, fromAccount }: Props) {
           </label>
           <input
             type="number"
-            inputMode="decimal"
             step="0.01"
             min="0"
             max={MAX_FORMAT_AMOUNT}
@@ -211,7 +210,6 @@ export default function TransferModal({ open, onCancel, fromAccount }: Props) {
             </label>
             <input
               type="number"
-              inputMode="decimal"
               step="0.0001"
               min="0"
               placeholder={`1 ${fromAccount.currency} = ? ${toAccount.currency}`}
