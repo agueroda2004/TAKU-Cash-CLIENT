@@ -321,7 +321,7 @@ export default function UpdateCategoryModal({
               setName(e.target.value);
               if (nameError) setNameError(null);
             }}
-            className={`h-11 w-full rounded-xl border-2 px-4 text-sm outline-none transition ${
+            className={`h-11 w-full rounded-xl border-2 px-4 text-base outline-none transition md:text-sm ${
               nameError
                 ? "border-red-400"
                 : "border-zinc-200 focus:border-duo-green"

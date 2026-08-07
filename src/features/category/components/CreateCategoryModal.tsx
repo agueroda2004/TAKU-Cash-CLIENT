@@ -175,7 +175,7 @@ export default function CreateCategoryModal({ open, onCancel }: Props) {
               setName(e.target.value);
               clearFieldError("name");
             }}
-            className={`h-11 w-full rounded-xl border-2 px-4 text-sm outline-none transition ${
+            className={`h-11 w-full rounded-xl border-2 px-4 text-base outline-none transition md:text-sm ${
               fieldErrors.name
                 ? "border-red-400"
                 : "border-zinc-200 focus:border-duo-green"
