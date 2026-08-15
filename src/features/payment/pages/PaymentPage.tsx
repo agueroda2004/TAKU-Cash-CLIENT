@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { request } from "../../../lib/api";
-import { getPaddle } from "../../../lib/paddle";
+// import { request } from "../../../lib/api";
+// import { getPaddle } from "../../../lib/paddle";
 import { PLANS } from "../../landing/data/landingData";
 import type { Plan } from "../../landing/data/landingData";
 import Modal from "../../../shared/ui/Modal";
@@ -15,7 +15,8 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@clerk/react";
+// import { useAuth } from "@clerk/react";
+import { notify } from "../../../lib/notify";
 
 const CONTACT_EMAIL = "agueroda2004@gmail.com";
 const WHATSAPP_NUMBER = "87236301";
@@ -31,38 +32,41 @@ function WhatsAppIcon({ className }: { className?: string }) {
 
 export default function PaymentPage() {
   const navigate = useNavigate();
-  const { getToken } = useAuth();
+  // const { getToken } = useAuth();
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [isCashMethod, setIsCashMethod] = useState(false);
 
-  async function handleSelect(planType: string) {
-    console.log("[PaymentPage] handleSelect planType:", planType);
-    if (!planType || !["mensual", "semestral", "anual"].includes(planType)) {
-      console.error("[PaymentPage] Invalid planType:", planType);
-      return;
-    }
-    try {
-      const token = await getToken();
-      console.log("[PaymentPage] token:", token ? "present" : "missing");
-      const { checkoutId } = await request<{ checkoutId: string }>(
-        "/subscriptions/checkout",
-        {
-          method: "POST",
-          body: {
-            plan: planType,
-            successUrl: `${window.location.origin}/app/welcome`,
-          },
-          token: token ?? undefined,
-        },
-      );
-      console.log("[PaymentPage] checkoutId:", checkoutId);
-      const paddle = await getPaddle();
-      console.log("[PaymentPage] paddle instance:", paddle);
-      paddle?.Checkout.open({ transactionId: checkoutId });
-    } catch (err) {
-      console.error("[PaymentPage] checkout error:", err);
-    }
-  }
+  // Paddle en validación de dominio: pagos con tarjeta temporalmente deshabilitados.
+  // Cuando Paddle apruebe el dominio, descomenta los imports de request/getPaddle/useAuth,
+  // este handleSelect y llama a handleSelect(selectedPlan.planType) en el botón "Pagar con tarjeta".
+  // async function handleSelect(planType: string) {
+  //   console.log("[PaymentPage] handleSelect planType:", planType);
+  //   if (!planType || !["mensual", "semestral", "anual"].includes(planType)) {
+  //     console.error("[PaymentPage] Invalid planType:", planType);
+  //     return;
+  //   }
+  //   try {
+  //     const token = await getToken();
+  //     console.log("[PaymentPage] token:", token ? "present" : "missing");
+  //     const { checkoutId } = await request<{ checkoutId: string }>(
+  //       "/subscriptions/checkout",
+  //       {
+  //         method: "POST",
+  //         body: {
+  //           plan: planType,
+  //           successUrl: `${window.location.origin}/app/welcome`,
+  //         },
+  //         token: token ?? undefined,
+  //       },
+  //     );
+  //     console.log("[PaymentPage] checkoutId:", checkoutId);
+  //     const paddle = await getPaddle();
+  //     console.log("[PaymentPage] paddle instance:", paddle);
+  //     paddle?.Checkout.open({ transactionId: checkoutId });
+  //   } catch (err) {
+  //     console.error("[PaymentPage] checkout error:", err);
+  //   }
+  // }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-duo-green-light/30 to-white px-4 py-12">
@@ -156,10 +160,9 @@ export default function PaymentPage() {
               </p>
 
               <button
-                onClick={() => {
-                  setSelectedPlan(null);
-                  handleSelect(selectedPlan.planType);
-                }}
+                onClick={() =>
+                  notify({ success: false, message: "Actualmente no disponible" })
+                }
                 className="flex items-center gap-4 rounded-2xl border-2 border-zinc-200 p-4 text-left transition hover:border-duo-green hover:shadow-md"
               >
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-duo-green-light text-duo-green">
