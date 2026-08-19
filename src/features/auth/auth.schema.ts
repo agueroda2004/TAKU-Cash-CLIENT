@@ -20,6 +20,12 @@ export const registerSchema = z.object({
     .email("Correo electrónico inválido")
     .max(254, "El correo no puede tener más de 254 caracteres"),
   password: passwordSchema,
+  termsAccepted: z.literal(true, {
+    error: "Debes aceptar los Términos de Servicio",
+  }),
+  privacyAccepted: z.literal(true, {
+    error: "Debes leer el Aviso de Privacidad",
+  }),
 });
 
 export const loginSchema = z.object({

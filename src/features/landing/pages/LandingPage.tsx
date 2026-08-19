@@ -13,8 +13,6 @@ import {
   Send,
   Mail,
   MapPin,
-  Star,
-  Quote,
   LogOut,
 } from "lucide-react";
 import { IMAGES } from "../../../constants/data";
@@ -29,9 +27,6 @@ import {
   SCREENSHOTS_SECTION,
   PRICING_SECTION,
   PLANS,
-  REVIEWS_SECTION,
-  REVIEWS,
-  SUCCESS_STORY,
   CONTACT_SECTION,
   FOOTER_LINKS,
   FOOTER_COPYRIGHT,
@@ -324,94 +319,6 @@ function Screenshots() {
   );
 }
 
-function Reviews() {
-  return (
-    <section className="bg-white py-20 lg:py-28">
-      <div className="mx-auto max-w-7xl px-4 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-extrabold text-zinc-900 sm:text-4xl">
-            {REVIEWS_SECTION.titleBefore}{" "}
-            <span className="text-duo-green">
-              {REVIEWS_SECTION.titleHighlight}
-            </span>
-          </h2>
-          <p className="mt-4 text-lg text-zinc-600">
-            {REVIEWS_SECTION.subtitle}
-          </p>
-        </div>
-
-        <div className="mt-16 grid gap-8 md:grid-cols-3">
-          {REVIEWS.map((r) => (
-            <div
-              key={r.email}
-              className="rounded-2xl border border-zinc-200 p-6 shadow-sm transition hover:shadow-md"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-duo-green text-sm font-bold text-white">
-                  {r.email[0].toUpperCase()}
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-zinc-900">{r.name}</p>
-                  <div className="flex items-center gap-0.5">
-                    {Array.from({ length: 5 }, (_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-3.5 w-3.5 ${
-                          i < r.rating
-                            ? "fill-amber-400 text-amber-400"
-                            : "fill-zinc-200 text-zinc-200"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <p className="mt-4 text-sm leading-relaxed text-zinc-600">
-                &ldquo;{r.message}&rdquo;
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function SuccessStory() {
-  return (
-    <section className="bg-duo-green py-20 lg:py-28">
-      <div className="mx-auto max-w-7xl px-4 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          <div className="rounded-2xl bg-white/10 p-8 text-center text-white lg:p-12">
-            <Quote className="mx-auto h-10 w-10 text-white/60" />
-            <p className="mt-6 text-xl leading-relaxed font-medium lg:text-2xl">
-              &ldquo;{SUCCESS_STORY.quote}&rdquo;
-            </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-6">
-              <span className="rounded-full bg-white/20 px-4 py-1.5 text-sm font-semibold">
-                {SUCCESS_STORY.highlight}
-              </span>
-            </div>
-            <div className="mt-8 flex flex-wrap justify-center gap-8">
-              <div>
-                <p className="text-2xl font-extrabold">{SUCCESS_STORY.result1}</p>
-              </div>
-              <div>
-                <p className="text-2xl font-extrabold">{SUCCESS_STORY.result2}</p>
-              </div>
-            </div>
-            <div className="mt-8 border-t border-white/20 pt-6">
-              <p className="text-sm font-semibold text-white/80">
-                &mdash; {SUCCESS_STORY.name}, {SUCCESS_STORY.title}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function Pricing() {
   const navigate = useNavigate();
   const { isSignedIn, isLoaded, getToken } = useAuth();
@@ -674,8 +581,6 @@ export default function LandingPage() {
       <Features />
       <Metrics />
       <Screenshots />
-      <Reviews />
-      <SuccessStory />
       <Pricing />
       <Contact />
       <Footer />

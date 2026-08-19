@@ -17,6 +17,9 @@ import WelcomePage from "./features/welcome/pages/WelcomePage";
 import PaymentPage from "./features/payment/pages/PaymentPage";
 import AdminPage from "./features/admin/pages/AdminPage";
 import NotFoundPage from "./features/notfound/pages/NotFoundPage";
+import TermsPage from "./features/legal/pages/TermsPage";
+import PrivacyPage from "./features/legal/pages/PrivacyPage";
+import LegalConsentPage from "./features/auth/pages/LegalConsentPage";
 import { request } from "./lib/api";
 
 function GuestRoute({ children }: { children: React.ReactNode }) {
@@ -50,7 +53,46 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
   return children;
 }
 
+function AuthenticatedRoute({ children }: { children: React.ReactNode }) {
+  const { isSignedIn, isLoaded } = useAuth();
+
+  if (!isLoaded) return <FullPageLoader />;
+  if (!isSignedIn) return <Navigate to="/login" replace />;
+  return children;
+}
+
+function ConsentRoute({ children }: { children: React.ReactNode }) {
+  const { isSignedIn, isLoaded: authLoaded, getToken } = useAuth();
+  const { data: consent, isLoading } = useQuery({
+    queryKey: ["auth.consents.status"],
+    queryFn: async () => {
+      const token = await getToken();
+      return request<{
+        termsAccepted: boolean;
+        privacyAccepted: boolean;
+      }>("/auth/consents/status", { token: token ?? undefined });
+    },
+    enabled: authLoaded && !!isSignedIn,
+    retry: false,
+  });
+
+  if (!authLoaded || isLoading) return <FullPageLoader />;
+  if (!isSignedIn) return <Navigate to="/login" replace />;
+  if (!consent?.termsAccepted || !consent.privacyAccepted) {
+    return <Navigate to="/app/legal-consent" replace />;
+  }
+  return children;
+}
+
 function SubscriptionRoute({ children }: { children: React.ReactNode }) {
+  return (
+    <ConsentRoute>
+      <SubscriptionAccess>{children}</SubscriptionAccess>
+    </ConsentRoute>
+  );
+}
+
+function SubscriptionAccess({ children }: { children: React.ReactNode }) {
   const { isSignedIn, isLoaded: authLoaded, getToken } = useAuth();
   const { data: sub, isLoading: subLoading } = useQuery({
     queryKey: ["subscription"],
@@ -77,6 +119,8 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
 
       <Route
         path="/login"
@@ -105,6 +149,14 @@ export default function App() {
       <Route
         path="/sso-callback"
         element={<SsoCallbackPage />}
+      />
+      <Route
+        path="/app/legal-consent"
+        element={
+          <AuthenticatedRoute>
+            <LegalConsentPage />
+          </AuthenticatedRoute>
+        }
       />
 
       <Route
@@ -169,8 +221,22 @@ export default function App() {
           </SubscriptionRoute>
         }
       />
-      <Route path="/app/welcome" element={<WelcomePage />} />
-      <Route path="/app/payment" element={<PaymentPage />} />
+      <Route
+        path="/app/welcome"
+        element={
+          <ConsentRoute>
+            <WelcomePage />
+          </ConsentRoute>
+        }
+      />
+      <Route
+        path="/app/payment"
+        element={
+          <ConsentRoute>
+            <PaymentPage />
+          </ConsentRoute>
+        }
+      />
 
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

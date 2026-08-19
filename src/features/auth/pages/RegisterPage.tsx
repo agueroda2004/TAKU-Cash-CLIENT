@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { z } from "zod";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useSignUp, useAuth } from "@clerk/react";
+import { useQueryClient } from "@tanstack/react-query";
 import { notify } from "../../../lib/notify";
 import { request } from "../../../lib/api";
 import { getPaddle } from "../../../lib/paddle";
@@ -25,10 +26,13 @@ export default function RegisterPage() {
   const [searchParams] = useSearchParams();
   const { signUp, fetchStatus } = useSignUp();
   const { getToken } = useAuth();
+  const queryClient = useQueryClient();
   const planParam = searchParams.get("plan");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [clerkError, setClerkError] = useState<{
     code: string;
@@ -60,7 +64,13 @@ export default function RegisterPage() {
     setClerkError(null);
     setFieldErrors({});
 
-    const result = registerSchema.safeParse({ name, email, password });
+    const result = registerSchema.safeParse({
+      name,
+      email,
+      password,
+      termsAccepted,
+      privacyAccepted,
+    });
 
     if (!result.success) {
       const errors: FieldErrors = {};
@@ -105,11 +115,23 @@ export default function RegisterPage() {
       }
 
       await signUp.finalize();
+      const token = await getToken();
+      const consent = await request<{
+        termsAccepted: boolean;
+        privacyAccepted: boolean;
+        versions: { terms: string; privacy: string };
+      }>("/auth/consents", {
+        method: "POST",
+        body: { source: "email_password" },
+        token: token ?? undefined,
+      });
+      await queryClient.cancelQueries({ queryKey: ["auth.consents.status"] });
+      queryClient.setQueryData(["auth.consents.status"], consent);
       notify({ success: true, message: "Cuenta creada exitosamente" });
 
       if (planParam && ["mensual", "semestral", "anual"].includes(planParam)) {
         try {
-          const token = await getToken();
+          const checkoutToken = await getToken();
           const { checkoutId } = await request<{ checkoutId: string }>(
             "/subscriptions/checkout",
             {
@@ -118,7 +140,7 @@ export default function RegisterPage() {
                 plan: planParam,
                 successUrl: `${window.location.origin}/app/welcome`,
               },
-              token: token ?? undefined,
+              token: checkoutToken ?? undefined,
             },
           );
           const paddle = await getPaddle();
@@ -236,6 +258,46 @@ export default function RegisterPage() {
           autoComplete="new-password"
           showStrength
         />
+
+        <div className="space-y-3 text-sm text-zinc-700">
+          <label className="flex items-start gap-3">
+            <input
+              type="checkbox"
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
+              className="mt-1 h-4 w-4 accent-duo-green"
+            />
+            <span>
+              Acepto los{" "}
+              <Link to="/terms" target="_blank" className="text-duo-blue underline">
+                Términos de Servicio
+              </Link>
+              .
+            </span>
+          </label>
+          {fieldErrors.termsAccepted && (
+            <p className="text-xs text-red-500">{fieldErrors.termsAccepted}</p>
+          )}
+
+          <label className="flex items-start gap-3">
+            <input
+              type="checkbox"
+              checked={privacyAccepted}
+              onChange={(e) => setPrivacyAccepted(e.target.checked)}
+              className="mt-1 h-4 w-4 accent-duo-green"
+            />
+            <span>
+              He leído el{" "}
+              <Link to="/privacy" target="_blank" className="text-duo-blue underline">
+                Aviso de Privacidad
+              </Link>
+              .
+            </span>
+          </label>
+          {fieldErrors.privacyAccepted && (
+            <p className="text-xs text-red-500">{fieldErrors.privacyAccepted}</p>
+          )}
+        </div>
 
         <button
           type="submit"

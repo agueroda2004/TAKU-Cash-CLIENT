@@ -23,7 +23,7 @@ export default function AuthLayout({ children, title, subtitle }: Props) {
         {children}
 
         <p className="mt-10 text-center text-xs text-duo-gray">
-          Al continuar, aceptas nuestros{" "}
+          Revisa nuestros{" "}
           <Link to="/terms" className="text-duo-blue underline">
             Términos
           </Link>{" "}

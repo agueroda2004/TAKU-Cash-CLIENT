@@ -28,7 +28,7 @@ export const HERO = {
   titleHighlight: "tus finanzas",
   titleAfter: "hoy",
   subtitle:
-    "Organiza tus ingresos y gastos, visualiza reportes claros y alcanza tus metas de ahorro. Todo en un solo lugar, simple y seguro.",
+    "Organiza tus ingresos y gastos, visualiza reportes claros y entiende mejor tus finanzas. Todo en un solo lugar, simple y seguro.",
   loadingText: "Cargando…",
   userCountSuffix: "usuarios activos",
   primaryButton: "Ver funcionalidades",
@@ -50,8 +50,8 @@ export const FEATURES = [
   },
   {
     icon: TrendingUp,
-    title: "Aumenta tus ahorros",
-    desc: "Visualiza tu progreso y mantén el enfoque en tus metas.",
+    title: "Entiende tus hábitos",
+    desc: "Visualiza tus movimientos y detecta cómo distribuyes tu dinero.",
   },
   {
     icon: PiggyBank,
@@ -60,8 +60,8 @@ export const FEATURES = [
   },
   {
     icon: Target,
-    title: "Metas inteligentes",
-    desc: "Establece metas de ahorro y dale seguimiento a tu progreso.",
+    title: "Categorías personalizables",
+    desc: "Organiza tus movimientos con categorías y subcategorías propias.",
   },
   {
     icon: BarChart3,
@@ -70,16 +70,16 @@ export const FEATURES = [
   },
   {
     icon: ShieldCheck,
-    title: "Tus datos seguros",
-    desc: "Autenticación con Clerk y cifrado de extremo a extremo.",
+    title: "Cuenta protegida",
+    desc: "Autenticación segura mediante Clerk para proteger el acceso a tu cuenta.",
   },
 ] as const;
 
 export const METRICS = [
-  { label: "Reducción de gastos hormiga", value: "35%" },
-  { label: "Aumento en ahorro mensual", value: "+42%" },
-  { label: "Usuarios que cumplen sus metas", value: "78%" },
-  { label: "Cuentas activas por usuario", value: "3.2" },
+  { label: "Monedas disponibles", value: "2" },
+  { label: "Tipos de cuenta", value: "4" },
+  { label: "Tipos de movimiento", value: "2" },
+  { label: "Días de prueba", value: "7" },
 ] as const;
 
 export const SCREENSHOTS_SECTION = {
@@ -133,7 +133,6 @@ export const PLANS: readonly Plan[] = [
       "Todas las funcionalidades",
       "Hasta 10 cuentas",
       "Reportes ilimitados",
-      "Exportación de datos",
       "Soporte prioritario",
     ],
     highlighted: true,
@@ -145,7 +144,6 @@ export const PLANS: readonly Plan[] = [
     planType: "anual",
     features: [
       "Todo lo del plan semestral",
-      "Metas de ahorro avanzadas",
       "Soporte premium",
     ],
     highlighted: false,
@@ -160,7 +158,7 @@ export const CONTACT_SECTION = {
   emailLabel: "Correo",
   email: "soporte@takucash.com",
   locationLabel: "Ubicación",
-  location: "San José, Costa Rica",
+  location: "Puriscal, San José, Costa Rica",
   formNamePlaceholder: "Tu nombre",
   formEmailPlaceholder: "tu@correo.com",
   formMessagePlaceholder: "Escribe tu mensaje…",
@@ -171,53 +169,12 @@ export const CONTACT_SECTION = {
   buttonSent: "¡Mensaje enviado!",
 } as const;
 
-export const REVIEWS_SECTION = {
-  titleBefore: "Lo que dicen",
-  titleHighlight: "nuestros usuarios",
-  subtitle:
-    "Personas como tú ya están transformando sus finanzas con TAKU-Cash.",
-} as const;
-
-export const REVIEWS = [
-  {
-    name: "María Fernández",
-    email: "mariaf@ejemplo.com",
-    rating: 5,
-    message:
-      "Desde que uso TAKU-Cash logré ahorrar más del 30% de mi salario mensual. La interfaz es súper intuitiva y los reportes me ayudaron a identificar gastos que ni sabía que tenía.",
-  },
-  {
-    name: "Carlos Mendoza",
-    email: "carlos.m@ejemplo.com",
-    rating: 5,
-    message:
-      "Finalmente una app que entiende las finanzas en Costa Rica. Poder llevar cuentas en CRC y USD sin complicaciones me cambió la vida. La recomiendo a todos mis colegas.",
-  },
-  {
-    name: "Andrea Rojas",
-    email: "andrea.r@ejemplo.com",
-    rating: 4,
-    message:
-      "Me encanta la claridad de los gráficos y lo fácil que es categorizar gastos. Lo único que extraño es poder exportar a Excel, pero sé que ya viene en camino.",
-  },
-] as const;
-
-export const SUCCESS_STORY = {
-  name: "Roberto Solís",
-  title: "Emprendedor y usuario de TAKU-Cash",
-  quote:
-    "Antes vivía al día, sin saber a dónde se iba mi dinero. Con TAKU-Cash descubrí que gastaba casi el 40% de mis ingresos en cosas innecesarias. En solo 3 meses reduje mis deudas, armé un fondo de emergencia y por primera vez en años pude invertir en mi negocio. No es solo una app, es un antes y después en mi vida financiera.",
-  highlight: "40% de gastos innecesarios identificados",
-  result1: "Reduje mis deudas en 6 meses",
-  result2: "Ahorro equivalente a 3 meses de gastos",
-} as const;
-
 export const FOOTER_LINKS = [
   { label: "Funciones", href: "#features" },
   { label: "Planes", href: "#plans" },
   { label: "Contacto", href: "#contact" },
-  { label: "Términos", href: "#" },
-  { label: "Privacidad", href: "#" },
+  { label: "Términos", href: "/terms" },
+  { label: "Privacidad", href: "/privacy" },
 ] as const;
 
 export const FOOTER_COPYRIGHT = "Todos los derechos reservados.";
