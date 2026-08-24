@@ -10,7 +10,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["icon.svg"],
+      includeAssets: ["icon.svg", "icon-192.png", "icon-512.png", "apple-touch-icon.png"],
       manifest: {
         name: "TAKU-Cash",
         short_name: "TAKU-Cash",
@@ -19,19 +19,19 @@ export default defineConfig({
         scope: "/",
         display: "standalone",
         theme_color: "#58cc02",
-        background_color: "#ffffff",
+        background_color: "#58cc02",
         lang: "es",
         icons: [
           {
-            src: "/icon.svg",
+            src: "/icon-192.png",
             sizes: "192x192",
-            type: "image/svg+xml",
+            type: "image/png",
             purpose: "any",
           },
           {
-            src: "/icon.svg",
+            src: "/icon-512.png",
             sizes: "512x512",
-            type: "image/svg+xml",
+            type: "image/png",
             purpose: "any maskable",
           },
         ],
