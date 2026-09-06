@@ -8,7 +8,7 @@ import { notify } from "../../../lib/notify";
 import AccountDropdown from "../../account/components/AccountDropdown";
 import CategoryDropdown from "../../category/components/CategoryDropdown";
 import { useAccountDropdown } from "../../account/hooks/useAccountDropdown";
-import { useCategory } from "../../category/hooks/useCategory";
+import { useCategoryDropdown } from "../../category/hooks/useCategoryDropdown";
 import { useTransactions } from "../hooks/useTransactions";
 import { createTransactionSchema } from "../transaction.schema";
 import type { TransactionType } from "../types";
@@ -37,7 +37,7 @@ function todayISO(): string {
 
 export default function CreateTransactionModal({ open, onCancel }: Props) {
   const { accounts } = useAccountDropdown();
-  const { categories } = useCategory();
+  const { categories } = useCategoryDropdown();
   const { createTransaction, isCreating } = useTransactions();
 
   const [type, setType] = useState<TransactionType>("EXPENSE");

@@ -13,7 +13,7 @@ import DeleteTransactionModal from "../components/DeleteTransactionModal";
 import AccountDropdown from "../../account/components/AccountDropdown";
 import CategoryDropdown from "../../category/components/CategoryDropdown";
 import { useAccountDropdown } from "../../account/hooks/useAccountDropdown";
-import { useCategory } from "../../category/hooks/useCategory";
+import { useCategoryDropdown } from "../../category/hooks/useCategoryDropdown";
 import { useTransactions } from "../hooks/useTransactions";
 
 import { notify } from "../../../lib/notify";
@@ -48,7 +48,7 @@ function LoadingSkeleton() {
 export default function TransactionPage() {
   const navigate = useNavigate();
   const { accounts, isLoading: accountsLoading } = useAccountDropdown();
-  const { categories } = useCategory({ pageSize: 50 });
+  const { categories } = useCategoryDropdown();
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] =
     useState<Transaction | null>(null);
