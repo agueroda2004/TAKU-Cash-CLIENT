@@ -9,6 +9,7 @@ type Props = {
   onConfirm?: () => void;
   confirmDisabled?: boolean;
   confirmLoading?: boolean;
+  variant?: "center" | "sheet";
 };
 
 export default function Modal({
@@ -20,11 +21,16 @@ export default function Modal({
   onConfirm,
   confirmDisabled,
   confirmLoading,
+  variant = "center",
 }: Props) {
   return (
-    <Overlay>
+    <Overlay variant={variant}>
       <div
-        className="z-50 flex max-h-[85%] w-full max-w-lg flex-col rounded-2xl bg-white shadow-xl"
+        className={
+          variant === "sheet"
+            ? "z-50 flex max-h-[92dvh] w-full max-w-lg flex-col rounded-t-3xl bg-white shadow-xl animate-slide-up sm:max-h-[85%] sm:rounded-2xl sm:animate-none"
+            : "z-50 flex max-h-[85%] w-full max-w-lg flex-col rounded-2xl bg-white shadow-xl"
+        }
         role="dialog"
         aria-modal="true"
       >

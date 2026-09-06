@@ -126,6 +126,7 @@ export default function TransferModal({ open, onCancel, fromAccount }: Props) {
       onConfirm={handleTransfer}
       confirmDisabled={!isValid || isTransferring}
       confirmLoading={isTransferring}
+      variant="sheet"
     >
       <div className="space-y-5">
         {submitError && (
