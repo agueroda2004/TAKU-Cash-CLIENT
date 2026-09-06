@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Filter, X } from "lucide-react";
+import { Plus, Filter, X, ChevronDown } from "lucide-react";
 import PageHeader from "../../../shared/ui/PageHeader";
 import Dropdown from "../../../shared/ui/Dropdown";
 import DatePicker from "../../../shared/ui/DatePicker";
@@ -63,6 +63,7 @@ export default function TransactionPage() {
   const [filterSubcategoryId, setFilterSubcategoryId] = useState<string | null>(
     null,
   );
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const {
     transactions,
@@ -182,6 +183,24 @@ export default function TransactionPage() {
     ],
   );
 
+  const appliedFilterCount = useMemo(
+    () =>
+      (filterType ? 1 : 0) +
+      (filterDateFrom ? 1 : 0) +
+      (filterDateTo ? 1 : 0) +
+      (filterAccountId ? 1 : 0) +
+      (filterCategoryId ? 1 : 0) +
+      (filterSubcategoryId ? 1 : 0),
+    [
+      filterType,
+      filterDateFrom,
+      filterDateTo,
+      filterAccountId,
+      filterCategoryId,
+      filterSubcategoryId,
+    ],
+  );
+
   function handleClearFilters() {
     setFilterType(null);
     setFilterDateFrom("");
@@ -230,136 +249,177 @@ export default function TransactionPage() {
         onClick={() => setModalOpen(true)}
       />
 
-      <div className="space-y-3 rounded-xl border-2 border-zinc-100 bg-white p-4">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div>
-            <label className="mb-1.5 block text-xs font-medium text-zinc-500">
-              Tipo
-            </label>
-            <div className="flex gap-2">
-              {TRANSACTION_TYPES.map((t) => (
-                <button
-                  key={t.value}
-                  type="button"
-                  onClick={() => {
-                    setFilterType(filterType === t.value ? null : t.value);
-                    setFilterCategoryId(null);
-                    setFilterSubcategoryId(null);
-                  }}
-                  className={`h-11 flex-1 rounded-xl border-2 text-sm font-semibold transition ${
-                    filterType === t.value
-                      ? t.value === "INCOME"
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-700"
-                        : "border-rose-500 bg-rose-50 text-rose-700"
-                      : "border-zinc-200 text-zinc-500 hover:border-zinc-300"
-                  }`}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <label className="mb-1.5 block text-xs font-medium text-zinc-500">
-              Desde
-            </label>
-            <DatePicker
-              value={filterDateFrom}
-              onChange={setFilterDateFrom}
-              placeholder="Fecha desde"
-              maxDate={new Date()}
-            />
-          </div>
-
-          <div>
-            <label className="mb-1.5 block text-xs font-medium text-zinc-500">
-              Hasta
-            </label>
-            <DatePicker
-              value={filterDateTo}
-              onChange={setFilterDateTo}
-              placeholder="Fecha hasta"
-              maxDate={new Date()}
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div>
-            <label className="mb-1.5 block text-xs font-medium text-zinc-500">
-              Cuenta
-            </label>
-            <AccountDropdown
-              accounts={accounts}
-              value={filterAccountId}
-              onChange={(id) => {
-                setFilterAccountId(id);
-                setPage(1);
-              }}
-              placeholder="Todas las cuentas"
-            />
-          </div>
-
-          <div>
-            <label className="mb-1.5 block text-xs font-medium text-zinc-500">
-              Categoría
-            </label>
-            <CategoryDropdown
-              categories={filteredCategories}
-              value={filterCategoryId}
-              onChange={(v) => {
-                setFilterCategoryId(v);
-                setFilterSubcategoryId(null);
-              }}
-              placeholder="Todas las categorías"
-            />
-          </div>
-
-          <div>
-            <label className="mb-1.5 block text-xs font-medium text-zinc-500">
-              Subcategoría
-            </label>
-            <Dropdown
-              options={availableSubcategories.map((s) => ({
-                value: s.id,
-                label: s.name,
-              }))}
-              value={filterSubcategoryId}
-              onChange={setFilterSubcategoryId}
-              placeholder="Todas las subcategorías"
-              disabled={
-                !filterCategoryId || availableSubcategories.length === 0
-              }
-              emptyText={
-                filterCategoryId && availableSubcategories.length === 0
-                  ? "Sin subcategorías"
-                  : undefined
-              }
-            />
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 sm:hidden">
           <button
             type="button"
-            onClick={applyFilters}
-            className="inline-flex h-11 items-center gap-2 rounded-xl bg-duo-green px-5 text-sm font-bold text-white transition hover:bg-duo-green-hover"
+            onClick={() => setMobileFiltersOpen((v) => !v)}
+            aria-expanded={mobileFiltersOpen}
+            aria-controls="transaction-filters-panel"
+            className="inline-flex h-11 flex-1 items-center justify-between gap-2 rounded-xl border-2 border-zinc-200 bg-white px-4 text-sm font-semibold text-zinc-700 transition hover:border-zinc-300"
           >
-            <Filter className="h-4 w-4" />
-            Filtrar
+            <span className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-zinc-400" />
+              Filtros
+              {appliedFilterCount > 0 && (
+                <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-duo-green px-1.5 text-xs font-bold text-white">
+                  {appliedFilterCount}
+                </span>
+              )}
+            </span>
+            <ChevronDown
+              className={`h-4 w-4 text-zinc-400 transition ${
+                mobileFiltersOpen ? "rotate-180" : ""
+              }`}
+            />
           </button>
 
           {hasActiveFilters && (
             <button
               type="button"
               onClick={handleClearFilters}
-              className="inline-flex h-11 items-center gap-2 rounded-xl border-2 border-zinc-200 px-5 text-sm font-semibold text-zinc-600 transition hover:border-zinc-300 hover:text-zinc-800"
+              aria-label="Limpiar filtros"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border-2 border-zinc-200 text-zinc-600 transition hover:border-zinc-300 hover:text-zinc-800"
             >
               <X className="h-4 w-4" />
-              Limpiar filtros
             </button>
           )}
+        </div>
+
+        <div
+          id="transaction-filters-panel"
+          className={`space-y-3 ${mobileFiltersOpen ? "" : "hidden sm:block"}`}
+        >
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-zinc-500">
+                Tipo
+              </label>
+              <div className="flex gap-2">
+                {TRANSACTION_TYPES.map((t) => (
+                  <button
+                    key={t.value}
+                    type="button"
+                    onClick={() => {
+                      setFilterType(filterType === t.value ? null : t.value);
+                      setFilterCategoryId(null);
+                      setFilterSubcategoryId(null);
+                    }}
+                    className={`h-11 flex-1 rounded-xl border-2 text-sm font-semibold transition ${
+                      filterType === t.value
+                        ? t.value === "INCOME"
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                          : "border-rose-500 bg-rose-50 text-rose-700"
+                        : "border-zinc-200 text-zinc-500 hover:border-zinc-300"
+                    }`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-zinc-500">
+                Desde
+              </label>
+              <DatePicker
+                value={filterDateFrom}
+                onChange={setFilterDateFrom}
+                placeholder="Fecha desde"
+                maxDate={new Date()}
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-zinc-500">
+                Hasta
+              </label>
+              <DatePicker
+                value={filterDateTo}
+                onChange={setFilterDateTo}
+                placeholder="Fecha hasta"
+                maxDate={new Date()}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-zinc-500">
+                Cuenta
+              </label>
+              <AccountDropdown
+                accounts={accounts}
+                value={filterAccountId}
+                onChange={(id) => {
+                  setFilterAccountId(id);
+                  setPage(1);
+                }}
+                placeholder="Todas las cuentas"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-zinc-500">
+                Categoría
+              </label>
+              <CategoryDropdown
+                categories={filteredCategories}
+                value={filterCategoryId}
+                onChange={(v) => {
+                  setFilterCategoryId(v);
+                  setFilterSubcategoryId(null);
+                }}
+                placeholder="Todas las categorías"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-zinc-500">
+                Subcategoría
+              </label>
+              <Dropdown
+                options={availableSubcategories.map((s) => ({
+                  value: s.id,
+                  label: s.name,
+                }))}
+                value={filterSubcategoryId}
+                onChange={setFilterSubcategoryId}
+                placeholder="Todas las subcategorías"
+                disabled={
+                  !filterCategoryId || availableSubcategories.length === 0
+                }
+                emptyText={
+                  filterCategoryId && availableSubcategories.length === 0
+                    ? "Sin subcategorías"
+                    : undefined
+                }
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={applyFilters}
+              className="inline-flex h-11 items-center gap-2 rounded-xl bg-duo-green px-5 text-sm font-bold text-white transition hover:bg-duo-green-hover"
+            >
+              <Filter className="h-4 w-4" />
+              Filtrar
+            </button>
+
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={handleClearFilters}
+                className="inline-flex h-11 items-center gap-2 rounded-xl border-2 border-zinc-200 px-5 text-sm font-semibold text-zinc-600 transition hover:border-zinc-300 hover:text-zinc-800"
+              >
+                <X className="h-4 w-4" />
+                Limpiar filtros
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

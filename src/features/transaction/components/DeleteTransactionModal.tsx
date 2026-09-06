@@ -37,9 +37,9 @@ export default function DeleteTransactionModal({
   }
 
   return (
-    <Overlay>
+    <Overlay variant="sheet">
       <div
-        className="z-50 mx-4 w-full max-w-lg rounded-2xl bg-white shadow-xl"
+        className="z-50 flex max-h-[92dvh] w-full flex-col overflow-y-auto rounded-t-3xl bg-white shadow-xl animate-slide-up sm:mx-4 sm:max-h-none sm:max-w-lg sm:overflow-visible sm:rounded-2xl sm:animate-none"
         role="dialog"
         aria-modal="true"
       >

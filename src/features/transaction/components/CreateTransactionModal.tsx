@@ -163,6 +163,7 @@ export default function CreateTransactionModal({ open, onCancel }: Props) {
       onConfirm={handleCreate}
       confirmDisabled={!isValid || isCreating}
       confirmLoading={isCreating}
+      variant="sheet"
     >
       <div className="space-y-4">
         {submitError && (

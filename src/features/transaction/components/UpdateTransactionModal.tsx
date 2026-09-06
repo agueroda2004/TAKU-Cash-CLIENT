@@ -75,6 +75,7 @@ export default function UpdateTransactionModal({
       onConfirm={handleSave}
       confirmDisabled={isUpdating}
       confirmLoading={isUpdating}
+      variant="sheet"
     >
       <div className="space-y-4">
         {submitError && (
