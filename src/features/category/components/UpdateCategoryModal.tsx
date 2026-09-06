@@ -298,6 +298,7 @@ export default function UpdateCategoryModal({
       onConfirm={handleSave}
       confirmDisabled={!isValid || !dirty || isUpdating}
       confirmLoading={isUpdating}
+      variant="sheet"
     >
       <div className="space-y-4">
         <p className="text-xs text-zinc-500">
