@@ -7,6 +7,7 @@ import { Toaster } from "react-hot-toast";
 import { Analytics } from "@vercel/analytics/react";
 import "./index.css";
 import App from "./App.tsx";
+import PwaUpdatePrompt from "./shared/ui/PwaUpdatePrompt";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,6 +36,7 @@ createRoot(document.getElementById("root")!).render(
       >
         <BrowserRouter>
           <App />
+          <PwaUpdatePrompt />
         </BrowserRouter>
       </ClerkProvider>
     </QueryClientProvider>
