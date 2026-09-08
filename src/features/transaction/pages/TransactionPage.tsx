@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Plus, Filter, X, ChevronDown } from "lucide-react";
 import PageHeader from "../../../shared/ui/PageHeader";
 import Dropdown from "../../../shared/ui/Dropdown";
@@ -47,13 +47,15 @@ function LoadingSkeleton() {
 
 export default function TransactionPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { accounts, isLoading: accountsLoading } = useAccountDropdown();
   const { categories } = useCategoryDropdown();
-  const [modalOpen, setModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] =
     useState<Transaction | null>(null);
   const [deletingTransaction, setDeletingTransaction] =
     useState<Transaction | null>(null);
+
+  const modalOpen = searchParams.get("new") === "1";
 
   const [filterType, setFilterType] = useState<TransactionType | null>(null);
   const [filterDateFrom, setFilterDateFrom] = useState("");
@@ -246,7 +248,7 @@ export default function TransactionPage() {
         title="Transacciones"
         description="Registra tus ingresos y gastos"
         buttonText="Nueva transacción"
-        onClick={() => setModalOpen(true)}
+        onClick={() => setSearchParams({ new: "1" })}
       />
 
       <div className="space-y-3">
@@ -485,7 +487,7 @@ export default function TransactionPage() {
       <CreateTransactionModal
         key={String(modalOpen)}
         open={modalOpen}
-        onCancel={() => setModalOpen(false)}
+        onCancel={() => setSearchParams({}, { replace: true })}
       />
 
       <UpdateTransactionModal

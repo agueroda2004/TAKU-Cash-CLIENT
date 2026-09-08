@@ -15,6 +15,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import BottomNav from "./BottomNav";
 
 type Props = {
   children: React.ReactNode;
@@ -26,6 +27,10 @@ const NAV_ITEMS = [
   { to: "/app/categories", label: "Categorías", icon: Tags },
   { to: "/app/transactions", label: "Transacciones", icon: ArrowLeftRight },
   { to: "/app/settings", label: "Configuración", icon: Settings },
+];
+
+const MOBILE_SECONDARY_ITEMS = [
+  { to: "/app/categories", label: "Categorías", icon: Tags },
 ];
 
 export default function DashboardLayout({ children }: Props) {
@@ -148,7 +153,7 @@ export default function DashboardLayout({ children }: Props) {
             </div>
 
             <nav className="space-y-1 px-3 py-4">
-              {NAV_ITEMS.map((item) => (
+              {MOBILE_SECONDARY_ITEMS.map((item) => (
                 <NavLink
                   key={item.to}
                   to={item.to}
@@ -188,11 +193,13 @@ export default function DashboardLayout({ children }: Props) {
         )}
 
         <main className="flex-1 overflow-auto">
-          <div className="mx-auto max-w-7xl px-4 py-6 lg:px-8 lg:py-8">
+          <div className="mx-auto max-w-7xl px-4 py-6 pb-24 lg:px-8 lg:py-8 lg:pb-8">
             {children}
           </div>
         </main>
       </div>
+
+      <BottomNav />
     </div>
   );
 }
