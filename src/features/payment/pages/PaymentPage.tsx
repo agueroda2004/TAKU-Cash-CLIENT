@@ -10,6 +10,7 @@ import {
   Wallet,
   X,
   Mail,
+  RefreshCw,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 // import { useAuth } from "@clerk/react";
@@ -23,7 +24,12 @@ const WHATSAPP_LINK = `https://wa.me/506${WHATSAPP_NUMBER}`;
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
       <path d="M12.04 2c-5.46 0-9.9 4.44-9.9 9.9 0 1.75.46 3.45 1.32 4.95L2 22l5.24-1.37a9.87 9.87 0 0 0 4.8 1.22h.01c5.45 0 9.89-4.44 9.89-9.9a9.9 9.9 0 0 0-9.9-9.9Zm0 18.13a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.1.81.83-3.03-.2-.31a8.2 8.2 0 0 1-1.26-4.4c0-4.54 3.7-8.23 8.24-8.23 4.53 0 8.22 3.69 8.22 8.23 0 4.54-3.69 8.23-8.23 8.23Zm4.5-6.16c-.25-.12-1.46-.72-1.68-.81-.22-.08-.39-.12-.55.13-.17.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.12-1.04-.38-1.99-1.23-.73-.66-1.23-1.47-1.37-1.72-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.55-1.34-.76-1.84-.2-.48-.4-.42-.55-.42h-.47c-.16 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.24 3.74.59.26 1.05.41 1.41.52.6.19 1.14.16 1.57.1.48-.07 1.46-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.11-.22-.17-.47-.29Z" />
     </svg>
   );
@@ -86,7 +92,8 @@ export default function PaymentPage() {
           Elige tu plan
         </h1>
         <p className="mt-2 text-zinc-600">
-          Suscríbete para seguir usando <span className="font-semibold text-duo-green">TAKU-Cash</span>.
+          Suscríbete para seguir usando{" "}
+          <span className="font-semibold text-duo-green">TAKU-Cash</span>.
           Cancela cuando quieras.
         </p>
 
@@ -116,7 +123,10 @@ export default function PaymentPage() {
 
               <ul className="mt-6 flex-1 space-y-3">
                 {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-zinc-700">
+                  <li
+                    key={f}
+                    className="flex items-start gap-2 text-sm text-zinc-700"
+                  >
                     <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-duo-green" />
                     {f}
                   </li>
@@ -139,6 +149,19 @@ export default function PaymentPage() {
               </button>
             </div>
           ))}
+        </div>
+
+        <div className="mx-auto mt-12 max-w-xl rounded-2xl border border-zinc-200 bg-white p-6 text-center">
+          <p className="text-sm text-zinc-600">
+            ¿Ya realizaste tu pago o tu cuenta fue activada?
+          </p>
+          <button
+            onClick={() => window.location.assign("/app")}
+            className="mt-4 inline-flex items-center justify-center gap-2 rounded-xl bg-duo-green px-6 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-duo-green-hover"
+          >
+            Actualizar estado de mi cuenta
+            <RefreshCw className="h-4 w-4" />
+          </button>
         </div>
       </div>
 
@@ -199,45 +222,45 @@ export default function PaymentPage() {
           ) : (
           */}
           <div className="flex flex-col gap-5">
-              <p className="text-sm leading-relaxed text-zinc-600">
-                Elige cómo quieres coordinar el pago en efectivo o por Simpe
-                Móvil. Por el mismo precio, te incluimos el primer mes de prueba
-                para activar tu cuenta.
-              </p>
+            <p className="text-sm leading-relaxed text-zinc-600">
+              Elige cómo quieres coordinar el pago en efectivo o por Simpe
+              Móvil. Por el mismo precio, te incluimos el primer mes de prueba
+              para activar tu cuenta.
+            </p>
 
-              <a
-                href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Pago TAKU-Cash - plan ${selectedPlan.name}`)}`}
-                className="flex items-center gap-4 rounded-2xl border-2 border-zinc-200 p-4 text-left transition hover:border-duo-green hover:shadow-md"
-              >
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-duo-green-light text-duo-green">
-                  <Mail className="h-6 w-6" />
-                </div>
-                <div className="min-w-0">
-                  <p className="font-bold text-zinc-900">Escríbenos por correo</p>
-                  <p className="truncate text-sm text-zinc-500">
-                    {CONTACT_EMAIL}
-                  </p>
-                </div>
-              </a>
+            <a
+              href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Pago TAKU-Cash - plan ${selectedPlan.name}`)}`}
+              className="flex items-center gap-4 rounded-2xl border-2 border-zinc-200 p-4 text-left transition hover:border-duo-green hover:shadow-md"
+            >
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-duo-green-light text-duo-green">
+                <Mail className="h-6 w-6" />
+              </div>
+              <div className="min-w-0">
+                <p className="font-bold text-zinc-900">Escríbenos por correo</p>
+                <p className="truncate text-sm text-zinc-500">
+                  {CONTACT_EMAIL}
+                </p>
+              </div>
+            </a>
 
-              <a
-                href={WHATSAPP_LINK}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-4 rounded-2xl border-2 border-zinc-200 p-4 text-left transition hover:border-duo-green hover:shadow-md"
-              >
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-green-100 text-green-600">
-                  <WhatsAppIcon className="h-6 w-6" />
-                </div>
-                <div>
-                  <p className="font-bold text-zinc-900">
-                    Escríbenos por WhatsApp
-                  </p>
-                  <p className="text-sm text-zinc-500">{WHATSAPP_NUMBER}</p>
-                </div>
-              </a>
+            <a
+              href={WHATSAPP_LINK}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-4 rounded-2xl border-2 border-zinc-200 p-4 text-left transition hover:border-duo-green hover:shadow-md"
+            >
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-green-100 text-green-600">
+                <WhatsAppIcon className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="font-bold text-zinc-900">
+                  Escríbenos por WhatsApp
+                </p>
+                <p className="text-sm text-zinc-500">{WHATSAPP_NUMBER}</p>
+              </div>
+            </a>
 
-              {/* Funcionalidad inactiva, posible activacion en un futuro
+            {/* Funcionalidad inactiva, posible activacion en un futuro
               <button
                 onClick={() => setIsCashMethod(false)}
                 className="flex items-center justify-center gap-2 text-sm font-semibold text-zinc-500 transition hover:text-zinc-700"
@@ -246,7 +269,7 @@ export default function PaymentPage() {
                 Volver a métodos de pago
               </button>
               */}
-            </div>
+          </div>
           {/* Funcionalidad inactiva, posible activacion en un futuro
           )}
           */}

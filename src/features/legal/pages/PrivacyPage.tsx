@@ -21,7 +21,7 @@ const sections = [
         <ul className="list-disc space-y-1 pl-5">
           <li>Nombre, correo electrónico e identificadores de cuenta.</li>
           <li>Estado, rol, fechas de creación y actividad de la cuenta.</li>
-          <li>Datos de suscripción, como identificadores de Paddle, plan, estado y fechas.</li>
+          <li>Datos de suscripción, como plan, estado y fechas.</li>
           <li>
             Datos financieros que el usuario registra manualmente: cuentas,
             saldos, monedas, ingresos, gastos, transferencias, categorías,
@@ -46,9 +46,10 @@ const sections = [
         Recibimos información directamente del usuario cuando crea su cuenta o
         registra sus finanzas. Clerk puede proporcionar datos de autenticación
         y perfil, incluyendo información de Google cuando se utiliza OAuth.
-        Paddle puede proporcionar información relacionada con pagos y
-        suscripciones. También podemos recibir datos técnicos de los servicios
-        de alojamiento, monitoreo y analítica.
+        Los pagos manuales (SINPE Móvil o efectivo) se coordinan a través de
+        WhatsApp o correo electrónico; TAKU-Cash puede conservar los datos del
+        comprobante y del pago. También podemos recibir datos técnicos de los
+        servicios de alojamiento, monitoreo y analítica.
       </p>
     ),
   },
@@ -74,7 +75,7 @@ const sections = [
         Utilizamos Vercel Analytics únicamente para conocer cuántas personas
         visitan el sitio y qué rutas utilizan, con el objetivo de entender y
         mejorar su funcionamiento. No utilizamos esta analítica para publicidad
-        personalizada ni vendemos información personal. Clerk, Paddle y otros
+        personalizada ni vendemos información personal. Clerk y otros
         proveedores pueden utilizar sus propias cookies o tecnologías similares
         para prestar sus servicios; sus prácticas se rigen también por sus
         respectivos avisos de privacidad.
@@ -86,7 +87,7 @@ const sections = [
     content: (
       <p>
         Para operar TAKU-Cash utilizamos Clerk para autenticación, Google para
-        OAuth cuando el usuario lo elige, Paddle para pagos, Sentry para
+        OAuth cuando el usuario lo elige, Sentry para
         monitoreo de errores, Vercel para el cliente web, Railway para el
         servidor y TiDB para la base de datos. Estos proveedores pueden tratar
         información desde otros países conforme a sus propias políticas,
@@ -123,8 +124,8 @@ const sections = [
           <a href="mailto:takucash2026@gmail.com">takucash2026@gmail.com</a>{" "}
           desde el correo asociado a la cuenta. Soporte verificará la identidad
           y procesará manualmente la solicitud. Eliminaremos los datos bajo
-          nuestro control y solicitaremos la eliminación a Clerk y Paddle cuando
-          corresponda. Paddle u otros proveedores pueden conservar determinados
+          nuestro control y solicitaremos la eliminación a Clerk y otros proveedores
+          cuando corresponda. Otros proveedores pueden conservar determinados
           registros por obligaciones legales, fiscales, antifraude, seguridad o
           disputas pendientes.
         </p>
@@ -217,7 +218,7 @@ export default function PrivacyPage() {
               Aviso de Privacidad
             </h1>
             <p className="mt-4 text-sm leading-relaxed text-zinc-600">
-              Última actualización: 19 de agosto de 2026. Este documento es un
+              Última actualización: 9 de septiembre de 2026. Este documento es un
               borrador operativo para el MVP y debe ser revisado por un abogado
               antes de su publicación definitiva.
             </p>

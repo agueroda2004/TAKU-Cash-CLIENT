@@ -9,6 +9,17 @@ import ChangePasswordForm from "../components/ChangePasswordForm";
 import CancelSubscriptionModal from "../components/CancelSubscriptionModal";
 import type { SubscriptionStatus } from "../types";
 
+const WHATSAPP_NUMBER = "87236301";
+const WHATSAPP_LINK = `https://wa.me/506${WHATSAPP_NUMBER}`;
+
+function WhatsAppIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M12.04 2c-5.46 0-9.9 4.44-9.9 9.9 0 1.75.46 3.45 1.32 4.95L2 22l5.24-1.37a9.87 9.87 0 0 0 4.8 1.22h.01c5.45 0 9.89-4.44 9.89-9.9a9.9 9.9 0 0 0-9.9-9.9Zm0 18.13a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.1.81.83-3.03-.2-.31a8.2 8.2 0 0 1-1.26-4.4c0-4.54 3.7-8.23 8.24-8.23 4.53 0 8.22 3.69 8.22 8.23 0 4.54-3.69 8.23-8.23 8.23Zm4.5-6.16c-.25-.12-1.46-.72-1.68-.81-.22-.08-.39-.12-.55.13-.17.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.12-1.04-.38-1.99-1.23-.73-.66-1.23-1.47-1.37-1.72-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.55-1.34-.76-1.84-.2-.48-.4-.42-.55-.42h-.47c-.16 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.24 3.74.59.26 1.05.41 1.41.52.6.19 1.14.16 1.57.1.48-.07 1.46-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.11-.22-.17-.47-.29Z" />
+    </svg>
+  );
+}
+
 function LoadingCard() {
   return (
     <div className="rounded-2xl border-2 border-zinc-100 bg-white p-6">
@@ -158,20 +169,29 @@ export default function SettingsPage() {
               )}
 
               {isCashSubscriber ? (
-                <div className="rounded-xl bg-zinc-50 px-4 py-4">
+                <div className="space-y-3 rounded-xl bg-zinc-50 px-4 py-4">
                   <p className="text-sm font-medium text-zinc-700">
-                    Cancelación por correo
+                    Cancelación por correo o WhatsApp
                   </p>
-                  <p className="mt-1 text-sm text-zinc-600">
+                  <p className="text-sm text-zinc-600">
                     Para cancelar tu suscripción, escribe un correo a{" "}
                     <a
                       href="mailto:agueroda2004@gmail.com"
                       className="font-semibold text-duo-green underline"
                     >
                       agueroda2004@gmail.com
-                    </a>
-                    .
+                    </a>{" "}
+                    o escríbenos por WhatsApp.
                   </p>
+                  <a
+                    href={WHATSAPP_LINK}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center justify-center gap-2 rounded-xl bg-green-100 px-4 py-2.5 text-sm font-bold text-green-600 transition hover:bg-green-200"
+                  >
+                    <WhatsAppIcon className="h-5 w-5" />
+                    Cancelar por WhatsApp
+                  </a>
                 </div>
               ) : hasActiveSubscription ? (
                 <button

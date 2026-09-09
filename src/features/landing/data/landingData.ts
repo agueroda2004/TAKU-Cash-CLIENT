@@ -153,18 +153,20 @@ export const CONTACT_SECTION = {
   title: "Contáctanos",
   subtitle:
     "¿Preguntas, sugerencias o quieres saber más? Escríbenos y te responderemos a la brevedad.",
-  emailLabel: "Correo",
   email: "soporte@takucash.com",
-  locationLabel: "Ubicación",
-  location: "Puriscal, San José, Costa Rica",
-  formNamePlaceholder: "Tu nombre",
-  formEmailPlaceholder: "tu@correo.com",
-  formMessagePlaceholder: "Escribe tu mensaje…",
-  formNameLabel: "Nombre",
-  formEmailLabel: "Correo",
-  formMessageLabel: "Mensaje",
-  buttonSend: "Enviar mensaje",
-  buttonSent: "¡Mensaje enviado!",
+  emailButton: "Escríbenos por correo",
+  whatsapp: "87236301",
+  whatsappLink: "https://wa.me/50687236301",
+  whatsappButton: "Escríbenos por WhatsApp",
+} as const;
+
+export const FINAL_CTA = {
+  title: "Empieza hoy",
+  subtitle:
+    "Crea tu cuenta gratis y toma el control de tus finanzas. Incluye 1 mes de prueba sin costo.",
+  primaryButton: "Registrarme gratis",
+  secondaryButton: "Iniciar sesión",
+  dashboardButton: "Ir al Dashboard",
 } as const;
 
 export const FOOTER_LINKS = [

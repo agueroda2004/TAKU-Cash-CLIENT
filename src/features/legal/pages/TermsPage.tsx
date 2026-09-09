@@ -79,18 +79,14 @@ const sections = [
     content: (
       <>
         <p>
-          TAKU-Cash ofrece una prueba gratuita de siete días. Para las pruebas
-          gestionadas por Paddle puede requerirse un método de pago. Las
-          pruebas activadas mediante pagos manuales por WhatsApp o Simpe Móvil
-          pueden ser habilitadas manualmente por administración sin método de
-          pago.
+          TAKU-Cash ofrece una prueba gratuita de un mes. Las pruebas activadas
+          mediante pagos manuales por WhatsApp o Simpe Móvil pueden ser
+          habilitadas manualmente por administración sin método de pago.
         </p>
         <p>
           Los planes, precios, periodos y funcionalidades disponibles se
-          muestran antes de contratar. Paddle procesa los pagos realizados a
-          través de su plataforma y sus condiciones también pueden aplicar a
-          esas transacciones. Los pagos manuales se confirman individualmente
-          por TAKU-Cash.
+          muestran antes de contratar. Los pagos manuales se confirman
+          individualmente por TAKU-Cash.
         </p>
         <p>
           Las cuentas pagadas mediante WhatsApp o SINPE Móvil se activarán en
@@ -99,13 +95,10 @@ const sections = [
           es ilegible, incompleto o requiere información adicional.
         </p>
         <p>
-          Los pagos procesados mediante Paddle se cobran en dólares
-          estadounidenses (USD). Los pagos realizados mediante SINPE Móvil se
-          solicitan en colones costarricenses (CRC). El monto en CRC puede
-          variar según el tipo de cambio aplicable al momento del pago. Las
-          comisiones bancarias o diferencias cambiarias serán responsabilidad
-          del usuario, salvo que la legislación aplicable disponga lo
-          contrario.
+          Los pagos se solicitan en colones costarricenses (CRC) mediante SINPE
+          Móvil o efectivo. Las comisiones bancarias o diferencias cambiarias
+          serán responsabilidad del usuario, salvo que la legislación aplicable
+          disponga lo contrario.
         </p>
       </>
     ),
@@ -167,7 +160,7 @@ const sections = [
     content: (
       <p>
         TAKU-Cash utiliza proveedores externos, incluyendo Clerk para
-        autenticación, Paddle para pagos y suscripciones, Sentry para
+        autenticación, Sentry para
         monitoreo de errores y proveedores de alojamiento y base de datos. El
         uso de sus servicios puede estar sujeto a sus propios términos y
         políticas. WhatsApp y el correo electrónico son canales externos para
@@ -235,7 +228,7 @@ export default function TermsPage() {
               Términos de Servicio
             </h1>
             <p className="mt-4 text-sm leading-relaxed text-zinc-600">
-              Última actualización: 19 de agosto de 2026. Este documento es un
+              Última actualización: 9 de septiembre de 2026. Este documento es un
               borrador operativo para el MVP y debe ser revisado por un abogado
               antes de su publicación definitiva.
             </p>

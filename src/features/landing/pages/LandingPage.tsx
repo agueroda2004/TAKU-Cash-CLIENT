@@ -10,9 +10,7 @@ import {
   Menu,
   X,
   ArrowRight,
-  Send,
   Mail,
-  MapPin,
   LogOut,
 } from "lucide-react";
 import { IMAGES } from "../../../constants/data";
@@ -28,9 +26,20 @@ import {
   PRICING_SECTION,
   PLANS,
   CONTACT_SECTION,
+  FINAL_CTA,
   FOOTER_LINKS,
   FOOTER_COPYRIGHT,
 } from "../data/landingData";
+
+const WHATSAPP_LINK = CONTACT_SECTION.whatsappLink;
+
+function WhatsAppIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M12.04 2c-5.46 0-9.9 4.44-9.9 9.9 0 1.75.46 3.45 1.32 4.95L2 22l5.24-1.37a9.87 9.87 0 0 0 4.8 1.22h.01c5.45 0 9.89-4.44 9.89-9.9a9.9 9.9 0 0 0-9.9-9.9Zm0 18.13a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.1.81.83-3.03-.2-.31a8.2 8.2 0 0 1-1.26-4.4c0-4.54 3.7-8.23 8.24-8.23 4.53 0 8.22 3.69 8.22 8.23 0 4.54-3.69 8.23-8.23 8.23Zm4.5-6.16c-.25-.12-1.46-.72-1.68-.81-.22-.08-.39-.12-.55.13-.17.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.12-1.04-.38-1.99-1.23-.73-.66-1.23-1.47-1.37-1.72-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.55-1.34-.76-1.84-.2-.48-.4-.42-.55-.42h-.47c-.16 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.24 3.74.59.26 1.05.41 1.41.52.6.19 1.14.16 1.57.1.48-.07 1.46-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.11-.22-.17-.47-.29Z" />
+    </svg>
+  );
+}
 
 function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -367,22 +376,6 @@ function Pricing() {
 }
 
 function Contact() {
-  const [sent, setSent] = useState(false);
-
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const data = new FormData(form);
-    const name = data.get("name") as string;
-    const email = data.get("email") as string;
-    const message = data.get("message") as string;
-    const mailto = `mailto:${CONTACT_SECTION.email}?subject=Contacto desde web - ${encodeURIComponent(name)}&body=${encodeURIComponent(`Nombre: ${name}\nCorreo: ${email}\n\nMensaje:\n${message}`)}`;
-    window.open(mailto);
-    form.reset();
-    setSent(true);
-    setTimeout(() => setSent(false), 4000);
-  }
-
   return (
     <section id="contact" className="bg-zinc-50 py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-4 lg:px-8">
@@ -395,87 +388,67 @@ function Contact() {
           </p>
         </div>
 
-        <div className="mx-auto mt-12 grid max-w-4xl gap-12 lg:grid-cols-2">
-          <div className="space-y-6">
-            <div className="flex items-start gap-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-duo-green-light text-duo-green">
-                <Mail className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="font-semibold text-zinc-900">
-                  {CONTACT_SECTION.emailLabel}
-                </p>
-                <a
-                  href={`mailto:${CONTACT_SECTION.email}`}
-                  className="text-sm text-zinc-600 transition hover:text-duo-green"
-                >
-                  {CONTACT_SECTION.email}
-                </a>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-duo-green-light text-duo-green">
-                <MapPin className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="font-semibold text-zinc-900">
-                  {CONTACT_SECTION.locationLabel}
-                </p>
-                <p className="text-sm text-zinc-600">
-                  {CONTACT_SECTION.location}
-                </p>
-              </div>
-            </div>
-          </div>
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+          <a
+            href={`mailto:${CONTACT_SECTION.email}`}
+            className="flex items-center gap-2 rounded-xl bg-duo-green px-7 py-3 text-base font-bold text-white shadow-md transition hover:bg-duo-green-hover"
+          >
+            <Mail className="h-5 w-5" aria-hidden="true" />
+            {CONTACT_SECTION.emailButton}
+          </a>
+          <a
+            href={WHATSAPP_LINK}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-2 rounded-xl bg-green-600 px-7 py-3 text-base font-bold text-white shadow-md transition hover:bg-green-700"
+          >
+            <WhatsAppIcon className="h-5 w-5" />
+            {CONTACT_SECTION.whatsappButton}
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="name" className="sr-only">
-                {CONTACT_SECTION.formNameLabel}
-              </label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                required
-                placeholder={CONTACT_SECTION.formNamePlaceholder}
-                className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-duo-green focus:ring-2 focus:ring-duo-green/20"
-              />
-            </div>
-            <div>
-              <label htmlFor="email" className="sr-only">
-                {CONTACT_SECTION.formEmailLabel}
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                placeholder={CONTACT_SECTION.formEmailPlaceholder}
-                className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-duo-green focus:ring-2 focus:ring-duo-green/20"
-              />
-            </div>
-            <div>
-              <label htmlFor="message" className="sr-only">
-                {CONTACT_SECTION.formMessageLabel}
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                required
-                rows={4}
-                placeholder={CONTACT_SECTION.formMessagePlaceholder}
-                className="w-full resize-none rounded-xl border border-zinc-300 px-4 py-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-duo-green focus:ring-2 focus:ring-duo-green/20"
-              />
-            </div>
+function FinalCta() {
+  const { isSignedIn, isLoaded } = useAuth();
+  const navigate = useNavigate();
+
+  return (
+    <section className="bg-duo-green py-20 lg:py-24">
+      <div className="mx-auto max-w-3xl px-4 text-center">
+        <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl">
+          {FINAL_CTA.title}
+        </h2>
+        <p className="mt-4 text-lg leading-relaxed text-white/90">
+          {FINAL_CTA.subtitle}
+        </p>
+
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+          {isLoaded && isSignedIn ? (
             <button
-              type="submit"
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-duo-green px-6 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-duo-green-hover"
+              onClick={() => navigate("/app")}
+              className="rounded-xl bg-white px-8 py-3 text-base font-bold text-duo-green shadow-md transition hover:bg-duo-green-light"
             >
-              {sent ? CONTACT_SECTION.buttonSent : CONTACT_SECTION.buttonSend}
-              <Send className="h-4 w-4" />
+              {FINAL_CTA.dashboardButton}
             </button>
-          </form>
+          ) : (
+            <>
+              <button
+                onClick={() => navigate("/register")}
+                className="rounded-xl bg-white px-8 py-3 text-base font-bold text-duo-green shadow-md transition hover:bg-duo-green-light"
+              >
+                {FINAL_CTA.primaryButton}
+              </button>
+              <button
+                onClick={() => navigate("/login")}
+                className="rounded-xl border-2 border-white/70 px-8 py-3 text-base font-bold text-white transition hover:bg-white/10"
+              >
+                {FINAL_CTA.secondaryButton}
+              </button>
+            </>
+          )}
         </div>
       </div>
     </section>
@@ -527,6 +500,7 @@ export default function LandingPage() {
       <Screenshots />
       <Pricing />
       <Contact />
+      <FinalCta />
       <Footer />
     </div>
   );
