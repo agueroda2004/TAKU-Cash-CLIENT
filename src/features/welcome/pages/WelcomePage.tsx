@@ -29,7 +29,7 @@ export default function WelcomePage() {
           ¡Bienvenido a <span className="text-duo-green">TAKU-Cash</span>!
         </h1>
         <p className="mt-3 text-lg text-zinc-600">
-          Tu prueba gratuita de 7 días ha comenzado.{" "}
+          Tu prueba gratuita de 1 mes ha comenzado.{" "}
           <span className="font-semibold text-zinc-800">
             Disfruta de todas las funcionalidades sin restricciones.
           </span>

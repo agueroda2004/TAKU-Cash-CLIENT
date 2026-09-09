@@ -31,8 +31,6 @@ export const HERO = {
     "Organiza tus ingresos y gastos, visualiza reportes claros y entiende mejor tus finanzas. Todo en un solo lugar, simple y seguro.",
   loadingText: "Cargando…",
   userCountSuffix: "usuarios activos",
-  primaryButton: "Ver funcionalidades",
-  secondaryButton: "Ver planes",
 } as const;
 
 export const FEATURES_SECTION = {
@@ -79,7 +77,7 @@ export const METRICS = [
   { label: "Monedas disponibles", value: "2" },
   { label: "Tipos de cuenta", value: "4" },
   { label: "Tipos de movimiento", value: "2" },
-  { label: "Días de prueba", value: "7" },
+  { label: "Mes de prueba", value: "1" },
 ] as const;
 
 export const SCREENSHOTS_SECTION = {
@@ -113,7 +111,7 @@ export type Plan = {
 export const PLANS: readonly Plan[] = [
   {
     name: "Mensual",
-    price: "$6",
+    price: "₡3 000",
     period: "/mes",
     planType: "mensual",
     features: [
@@ -126,7 +124,7 @@ export const PLANS: readonly Plan[] = [
   },
   {
     name: "Semestral",
-    price: "$32",
+    price: "₡16 500",
     period: "/6 meses",
     planType: "semestral",
     features: [
@@ -139,7 +137,7 @@ export const PLANS: readonly Plan[] = [
   },
   {
     name: "Anual",
-    price: "$60",
+    price: "₡29 500",
     period: "/año",
     planType: "anual",
     features: [

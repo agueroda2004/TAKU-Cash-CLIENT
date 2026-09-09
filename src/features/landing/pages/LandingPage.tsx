@@ -33,8 +33,6 @@ import {
 } from "../data/landingData";
 
 function Navbar() {
-  const { isSignedIn, isLoaded, signOut } = useAuth();
-  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -47,7 +45,7 @@ function Navbar() {
           </span>
         </a>
 
-        <div className="hidden items-center gap-8 md:flex">
+        <div className="hidden flex-1 items-center justify-center gap-8 md:flex">
           {NAV_LINKS.map((l) => (
             <a
               key={l.href}
@@ -57,42 +55,6 @@ function Navbar() {
               {l.label}
             </a>
           ))}
-        </div>
-
-        <div className="hidden items-center gap-3 md:flex">
-          {isLoaded && isSignedIn ? (
-            <>
-              <button
-                onClick={() => navigate("/app")}
-                className="rounded-xl bg-duo-green px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-duo-green-hover"
-              >
-                {NAV_BUTTONS.dashboard}
-              </button>
-              <button
-                onClick={() => signOut()}
-                aria-label={NAV_BUTTONS.signOut}
-                className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold text-zinc-700 transition hover:bg-red-50 hover:text-duo-red"
-              >
-                <LogOut className="h-4 w-4" aria-hidden="true" />
-                {NAV_BUTTONS.signOut}
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={() => navigate("/login")}
-                className="rounded-xl px-5 py-2.5 text-sm font-bold text-zinc-700 transition hover:bg-zinc-100"
-              >
-                {NAV_BUTTONS.signIn}
-              </button>
-              <button
-                onClick={() => navigate("/register")}
-                className="rounded-xl bg-duo-green px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-duo-green-hover"
-              >
-                {NAV_BUTTONS.signUp}
-              </button>
-            </>
-          )}
         </div>
 
         <button
@@ -118,41 +80,6 @@ function Navbar() {
               </a>
             ))}
           </div>
-          <div className="border-t border-zinc-100 px-4 py-4">
-            {isLoaded && isSignedIn ? (
-              <div className="flex flex-col gap-2">
-                <button
-                  onClick={() => navigate("/app")}
-                  className="flex w-full items-center justify-center rounded-xl bg-duo-green px-5 py-2.5 text-sm font-bold text-white"
-                >
-                  {NAV_BUTTONS.dashboard}
-                </button>
-                <button
-                  onClick={() => signOut()}
-                  aria-label={NAV_BUTTONS.signOut}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold text-zinc-700 transition hover:bg-red-50 hover:text-duo-red"
-                >
-                  <LogOut className="h-4 w-4" aria-hidden="true" />
-                  {NAV_BUTTONS.signOut}
-                </button>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-2">
-                <button
-                  onClick={() => navigate("/login")}
-                  className="rounded-xl px-5 py-2.5 text-sm font-bold text-zinc-700 transition hover:bg-zinc-100"
-                >
-                  {NAV_BUTTONS.signIn}
-                </button>
-                <button
-                  onClick={() => navigate("/register")}
-                  className="rounded-xl bg-duo-green px-5 py-2.5 text-sm font-bold text-white"
-                >
-                  {NAV_BUTTONS.signUp}
-                </button>
-              </div>
-            )}
-          </div>
         </div>
       )}
     </nav>
@@ -165,6 +92,8 @@ function Hero() {
     queryFn: () => request<{ count: number }>("/public/user-count"),
     refetchInterval: 30_000,
   });
+  const { isSignedIn, isLoaded, signOut } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <section className="relative overflow-hidden pt-28 pb-20 lg:pt-36 lg:pb-28">
@@ -194,24 +123,39 @@ function Hero() {
         </div>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-          <button
-            onClick={() => {
-              const el = document.getElementById("features");
-              el?.scrollIntoView({ behavior: "smooth" });
-            }}
-            className="rounded-xl bg-duo-green px-7 py-3 text-base font-bold text-white shadow-md transition hover:bg-duo-green-hover"
-          >
-            {HERO.primaryButton}
-          </button>
-          <button
-            onClick={() => {
-              const el = document.getElementById("plans");
-              el?.scrollIntoView({ behavior: "smooth" });
-            }}
-            className="rounded-xl border-2 border-zinc-300 px-7 py-3 text-base font-bold text-zinc-700 transition hover:border-duo-green hover:text-duo-green"
-          >
-            {HERO.secondaryButton}
-          </button>
+          {isLoaded && isSignedIn ? (
+            <>
+              <button
+                onClick={() => navigate("/app")}
+                className="rounded-xl bg-duo-green px-7 py-3 text-base font-bold text-white shadow-md transition hover:bg-duo-green-hover"
+              >
+                {NAV_BUTTONS.dashboard}
+              </button>
+              <button
+                onClick={() => signOut()}
+                aria-label={NAV_BUTTONS.signOut}
+                className="flex items-center gap-2 rounded-xl border-2 border-zinc-300 px-7 py-3 text-base font-bold text-zinc-700 transition hover:border-duo-red hover:bg-red-50 hover:text-duo-red"
+              >
+                <LogOut className="h-5 w-5" aria-hidden="true" />
+                {NAV_BUTTONS.signOut}
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => navigate("/login")}
+                className="rounded-xl border-2 border-zinc-300 px-7 py-3 text-base font-bold text-zinc-700 transition hover:border-duo-green hover:text-duo-green"
+              >
+                {NAV_BUTTONS.signIn}
+              </button>
+              <button
+                onClick={() => navigate("/register")}
+                className="rounded-xl bg-duo-green px-7 py-3 text-base font-bold text-white shadow-md transition hover:bg-duo-green-hover"
+              >
+                {NAV_BUTTONS.signUp}
+              </button>
+            </>
+          )}
         </div>
       </div>
     </section>

@@ -9,14 +9,13 @@ import {
   ArrowRight,
   Wallet,
   X,
-  CreditCard,
-  Banknote,
   Mail,
-  ArrowLeft,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 // import { useAuth } from "@clerk/react";
-import { notify } from "../../../lib/notify";
+// Funcionalidad inactiva, posible activacion en un futuro
+// import { notify } from "../../../lib/notify";
+// import { CreditCard, Banknote, ArrowLeft } from "lucide-react";
 
 const CONTACT_EMAIL = "agueroda2004@gmail.com";
 const WHATSAPP_NUMBER = "87236301";
@@ -34,7 +33,7 @@ export default function PaymentPage() {
   const navigate = useNavigate();
   // const { getToken } = useAuth();
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
-  const [isCashMethod, setIsCashMethod] = useState(false);
+  const [, setIsCashMethod] = useState(false);
 
   // Paddle en validación de dominio: pagos con tarjeta temporalmente deshabilitados.
   // Cuando Paddle apruebe el dominio, descomenta los imports de request/getPaddle/useAuth,
@@ -127,7 +126,7 @@ export default function PaymentPage() {
               <button
                 onClick={() => {
                   setSelectedPlan(plan);
-                  setIsCashMethod(false);
+                  setIsCashMethod(true);
                 }}
                 className={`mt-8 flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold transition ${
                   plan.highlighted
@@ -145,10 +144,11 @@ export default function PaymentPage() {
 
       {selectedPlan && (
         <Modal
-          title={isCashMethod ? "Pagar en efectivo" : "¿Cómo quieres pagar?"}
+          title="Pagar en efectivo"
           onCancel={() => setSelectedPlan(null)}
-          cancelText={isCashMethod ? "Cerrar" : "Cancelar"}
+          cancelText="Cerrar"
         >
+          {/* Funcionalidad inactiva, posible activacion en un futuro
           {!isCashMethod ? (
             <div className="flex flex-col gap-3">
               <p className="text-sm text-zinc-600">
@@ -197,15 +197,12 @@ export default function PaymentPage() {
               </button>
             </div>
           ) : (
-            <div className="flex flex-col gap-5">
-              <div className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-700">
-                Paga en efectivo o por Simpe Móvil y obtén un{" "}
-                <span className="font-bold">4% de descuento</span> en todos los
-                planes.
-              </div>
+          */}
+          <div className="flex flex-col gap-5">
               <p className="text-sm leading-relaxed text-zinc-600">
                 Elige cómo quieres coordinar el pago en efectivo o por Simpe
-                Móvil. Nos pondremos en contacto para activar tu cuenta.
+                Móvil. Por el mismo precio, te incluimos el primer mes de prueba
+                para activar tu cuenta.
               </p>
 
               <a
@@ -240,6 +237,7 @@ export default function PaymentPage() {
                 </div>
               </a>
 
+              {/* Funcionalidad inactiva, posible activacion en un futuro
               <button
                 onClick={() => setIsCashMethod(false)}
                 className="flex items-center justify-center gap-2 text-sm font-semibold text-zinc-500 transition hover:text-zinc-700"
@@ -247,8 +245,11 @@ export default function PaymentPage() {
                 <ArrowLeft className="h-4 w-4" />
                 Volver a métodos de pago
               </button>
+              */}
             </div>
+          {/* Funcionalidad inactiva, posible activacion en un futuro
           )}
+          */}
         </Modal>
       )}
     </div>
